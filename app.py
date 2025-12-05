@@ -249,7 +249,7 @@ def main():
     with col_logo:
         st.markdown("<h1 style='text-align: center;'>🎓</h1>", unsafe_allow_html=True)
     with col_title:
-        st.markdown("<h1 class='main-header'>Trustworthy Dropout Risk Advisor</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 class='main-header'>Trustworthy Dropout Risk Advisor (User Study)</h1>", unsafe_allow_html=True)
     
     # Sidebar for navigation
     with st.sidebar:
@@ -856,5 +856,6 @@ st.markdown("""
     setInterval(updateHeight, 1000);
 </script>
 """, unsafe_allow_html=True)
+
 
 

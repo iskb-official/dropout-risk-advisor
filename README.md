@@ -213,9 +213,9 @@ If you use this work in research, please cite:
 ## 📞 Contact
 
 **Md Shakib Hasan**  
-Faculty of Artificial Intelligence in Education  
-Central China Normal University
-Email: shakib@mails.ccnu.edu.cn
+- Faculty of Artificial Intelligence in Education  
+- Central China Normal University
+- Email: shakib@mails.ccnu.edu.cn
 
 ## 📄 License
 
@@ -226,4 +226,5 @@ The dataset is from UCI/Kaggle and subject to their respective terms.
 ---
 
 **⚠️ Disclaimer**: This system is a research prototype. Institutions should conduct local validation, ethical review, and implement appropriate governance before real-world deployment.
+
 

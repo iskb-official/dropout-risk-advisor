@@ -3,7 +3,7 @@
 A machine learning tool that predicts student dropout risk and recommends interventions.
 
 ## 🌐 Live Demo
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://your-app-name.streamlit.app)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://dropoutra.streamlit.app)
 
 ## ✨ Features
 - 🤖 XGBoost ML model for dropout prediction
@@ -23,4 +23,5 @@ git clone https://github.com/yourusername/dropout-risk-advisor.git
 pip install -r requirements.txt
 
 # Run the app
+
 streamlit run app.py

@@ -17,7 +17,7 @@ A machine learning tool that predicts student dropout risk and recommends interv
 ### Local Development
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/dropout-risk-advisor.git
+git clone https://github.com/iskb-official/dropout-risk-advisor.git
 
 # Install dependencies
 pip install -r requirements.txt
@@ -25,3 +25,4 @@ pip install -r requirements.txt
 # Run the app
 
 streamlit run app.py
+

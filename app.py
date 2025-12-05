@@ -264,9 +264,9 @@ def main():
         st.markdown("""
         This tool helps identify students at risk of dropping out and recommends appropriate interventions.
         
-        **Data Source:** Historical student academic records
-        **Model:** XGBoost classifier
-        **Last Updated:** March 2024
+        **Data Source:** Predict Students' Dropout and Academic Success (https://archive.ics.uci.edu/dataset/697/predict+students+dropout+and+academic+success)
+        **Model:** XGBoost classifier 
+        **Last Updated:** 05 Dec, 2025
         """)
         
         with st.expander("Contact Support"):
@@ -752,3 +752,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

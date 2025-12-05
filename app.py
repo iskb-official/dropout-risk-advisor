@@ -12,8 +12,13 @@ from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 import shap
 
-DATA_PATH = Path(r"C:\Users\shaki\CCNU\OneDrive - mails.ccnu.edu.cn\Desktop\EDXAI")
+# --- FIX: Updated Data Path for Deployment ---
+# Use the current file's directory (app.py's location) as the base path.
+# This makes the data path robust for deployment on any system.
+BASE_DIR = Path(__file__).parent 
 CSV_NAME = "students_dropout_academic_success.csv"
+DATA_FILE_PATH = BASE_DIR / CSV_NAME
+# ---------------------------------------------
 
 LOW_TH = 0.2
 HIGH_TH = 0.5
@@ -111,7 +116,13 @@ st.markdown("""
 
 @st.cache_resource(show_spinner=True)
 def load_and_train_model():
-    df = pd.read_csv(DATA_PATH / CSV_NAME)
+    # Load data using the deployment-friendly path
+    if not DATA_FILE_PATH.exists():
+        st.error(f"Data file not found at: {DATA_FILE_PATH}")
+        st.stop()
+        
+    df = pd.read_csv(DATA_FILE_PATH)
+    
     df["y"] = df["target"].map({"Dropout": 1, "Graduate": 0, "Enrolled": 0})
     feature_cols = [c for c in df.columns if c not in ["target", "y"]]
     X = df[feature_cols]
@@ -379,6 +390,7 @@ def main():
                 """, unsafe_allow_html=True)
             
             with stats_col2:
+                # Removed the dynamic text that was dependent on a global counter (which doesn't exist)
                 st.markdown("""
                 <div class='metric-box'>
                 <h3>Students Assessed</h3>
@@ -442,6 +454,8 @@ def main():
                 action = interventions[band]
                 
                 # Calculate SHAP values
+                # Note: SHAP TreeExplainer can return a tuple for multi-class, but XGBClassifier for binary
+                # typically returns an array. We access the first element (the row of values) for the single prediction.
                 shap_vals = explainer.shap_values(x_df)
                 shap_row = shap_vals[0]
                 

@@ -400,7 +400,7 @@ def main():
                 st.markdown("""
                 <div class='metric-box'>
                 <h3>Students Assessed</h3>
-                <h4>Prototype</h4>
+                <h2>Prototype</h2>
                 <p>This month</p>
                 </div>
                 """, unsafe_allow_html=True)
@@ -752,4 +752,30 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# Add to the end of your main() function in app.py
+st.markdown("""
+<script>
+// Send height updates to parent
+function updateIframeHeight() {
+    const height = document.body.scrollHeight;
+    window.parent.postMessage({
+        type: 'streamlit:height',
+        height: height
+    }, '*');
+}
+
+// Update on load and content changes
+window.addEventListener('load', updateIframeHeight);
+new MutationObserver(updateIframeHeight).observe(document.body, {
+    childList: true,
+    subtree: true
+});
+
+// Notify parent that Streamlit is ready
+window.parent.postMessage({
+    type: 'streamlit:ready'
+}, '*');
+</script>
+""", unsafe_allow_html=True)
 

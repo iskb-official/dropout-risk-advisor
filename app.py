@@ -753,29 +753,108 @@ def main():
 if __name__ == "__main__":
     main()
 
-# Add to the end of your main() function in app.py
+# Make Streamlit app match your website
 st.markdown("""
+<style>
+    /* Hide Streamlit branding */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    
+    /* Match your website colors */
+    .stApp {
+        background: transparent;
+    }
+    
+    /* Remove padding */
+    .block-container {
+        padding-top: 0rem;
+        padding-bottom: 0rem;
+    }
+    
+    /* Remove borders from elements */
+    .stButton>button {
+        border: none;
+    }
+    
+    /* Make everything blend in */
+    .stRadio > div {
+        flex-direction: row;
+        align-items: center;
+    }
+</style>
+
 <script>
-// Send height updates to parent
-function updateIframeHeight() {
-    const height = document.body.scrollHeight;
-    window.parent.postMessage({
-        type: 'streamlit:height',
-        height: height
-    }, '*');
-}
+    // Remove any iframe borders
+    if (window !== window.top) {
+        document.body.style.margin = '0';
+        document.body.style.padding = '0';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    // Send height updates to parent
+    function updateHeight() {
+        window.parent.postMessage({
+            type: 'heightUpdate',
+            height: document.body.scrollHeight
+        }, '*');
+    }
+    
+    // Update on load and content changes
+    window.addEventListener('load', updateHeight);
+    setInterval(updateHeight, 1000);
+</script>
+""", unsafe_allow_html=True)# Make Streamlit app match your website
+st.markdown("""
+<style>
+    /* Hide Streamlit branding */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    
+    /* Match your website colors */
+    .stApp {
+        background: transparent;
+    }
+    
+    /* Remove padding */
+    .block-container {
+        padding-top: 0rem;
+        padding-bottom: 0rem;
+    }
+    
+    /* Remove borders from elements */
+    .stButton>button {
+        border: none;
+    }
+    
+    /* Make everything blend in */
+    .stRadio > div {
+        flex-direction: row;
+        align-items: center;
+    }
+</style>
 
-// Update on load and content changes
-window.addEventListener('load', updateIframeHeight);
-new MutationObserver(updateIframeHeight).observe(document.body, {
-    childList: true,
-    subtree: true
-});
-
-// Notify parent that Streamlit is ready
-window.parent.postMessage({
-    type: 'streamlit:ready'
-}, '*');
+<script>
+    // Remove any iframe borders
+    if (window !== window.top) {
+        document.body.style.margin = '0';
+        document.body.style.padding = '0';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    // Send height updates to parent
+    function updateHeight() {
+        window.parent.postMessage({
+            type: 'heightUpdate',
+            height: document.body.scrollHeight
+        }, '*');
+    }
+    
+    // Update on load and content changes
+    window.addEventListener('load', updateHeight);
+    setInterval(updateHeight, 1000);
 </script>
 """, unsafe_allow_html=True)
+
 

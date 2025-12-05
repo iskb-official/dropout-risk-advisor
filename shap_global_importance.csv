@@ -1,0 +1,37 @@
+feature,mean_abs_shap
+Curricular units 2nd sem (approved),1.2445315
+Tuition fees up to date,0.46743932
+Curricular units 1st sem (approved),0.44877103
+Curricular units 2nd sem (grade),0.4110803
+Course,0.3195451
+Age at enrollment,0.25325596
+Unemployment rate,0.20996599
+Gender,0.19142635
+Admission grade,0.19101137
+Father's occupation,0.18448135
+Curricular units 2nd sem (enrolled),0.17525773
+Mother's qualification,0.17504837
+Curricular units 2nd sem (evaluations),0.16537271
+Debtor,0.15894023
+Mother's occupation,0.15469323
+Scholarship holder,0.15269749
+Curricular units 1st sem (grade),0.15049724
+Curricular units 1st sem (enrolled),0.13445528
+Previous qualification (grade),0.13084687
+Displaced,0.116883434
+GDP,0.11346893
+Application mode,0.10859025
+Father's qualification,0.103735
+Application order,0.09211858
+Curricular units 2nd sem (credited),0.0697096
+Curricular units 1st sem (evaluations),0.06443591
+Curricular units 1st sem (credited),0.05939404
+Inflation rate,0.04491947
+Curricular units 1st sem (without evaluations),0.035840794
+Marital Status,0.023545474
+Previous qualification,0.022218911
+Curricular units 2nd sem (without evaluations),0.01467807
+Nacionality,0.011073899
+Daytime/evening attendance,0.008861204
+International,0.00077572605
+Educational special needs,0.00023866161

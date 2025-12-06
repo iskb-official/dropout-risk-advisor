@@ -391,7 +391,7 @@ def main():
                 st.markdown("""
                 <div class='metric-box'>
                 <h3>Model Accuracy</h3>
-                <h2>87%</h2>
+                <h4>87%</h4>
                 <p>On test data</p>
                 </div>
                 """, unsafe_allow_html=True)
@@ -400,7 +400,7 @@ def main():
                 st.markdown("""
                 <div class='metric-box'>
                 <h3>Students Assessed</h3>
-                <h2>Prototype</h2>
+                <h4>Prototype</h4>
                 <p>This month</p>
                 </div>
                 """, unsafe_allow_html=True)
@@ -856,6 +856,7 @@ st.markdown("""
     setInterval(updateHeight, 1000);
 </script>
 """, unsafe_allow_html=True)
+
 
 
 

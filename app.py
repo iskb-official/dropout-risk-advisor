@@ -390,8 +390,8 @@ def main():
             with stats_col1:
                 st.markdown("""
                 <div class='metric-box'>
-                <h4>Model Accuracy</h4>
-                <h5>87%</h5>
+                <h3>Model Accuracy</h3>
+                <h4>87%</h4>
                 <p>On test data</p>
                 </div>
                 """, unsafe_allow_html=True)
@@ -399,8 +399,8 @@ def main():
             with stats_col2:
                 st.markdown("""
                 <div class='metric-box'>
-                <h4>Students Assessed</h4>
-                <h5>Prototype</h5>
+                <h3>Students Assessed</h3>
+                <h4>Prototype</h4>
                 <p>This month</p>
                 </div>
                 """, unsafe_allow_html=True)
@@ -856,6 +856,7 @@ st.markdown("""
     setInterval(updateHeight, 1000);
 </script>
 """, unsafe_allow_html=True)
+
 
 
 

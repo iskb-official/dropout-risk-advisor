@@ -75,29 +75,236 @@ FEATURE_LABELS = {
 # ==========================================================
 # MODERN CSS
 # ==========================================================
+# ==========================================================
+# UI THEME PATCH  (presentation only - no logic changes)
+#
+# HOW TO APPLY
+# 1) In app.py, find the block under "# MODERN CSS" that starts with
+#        st.markdown( """ <style> ... </style> """, unsafe_allow_html=True )
+#    and REPLACE that whole st.markdown(...) call with the code below.
+# 2) Keep every class name (.main-header, .tier-low, .explain-box, ...) as is.
+#    They are already used by main(), so nothing else needs to be edited.
+# ==========================================================
+import plotly.graph_objects as go
+import plotly.io as pio
+
+# ---------- Plotly: one consistent, clean chart theme ----------
+_FONT = "Inter, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+pio.templates["campus"] = go.layout.Template(
+    layout=go.Layout(
+        font=dict(family=_FONT, size=13, color="#334155"),
+        title=dict(font=dict(size=15, color="#0F172A", family=_FONT), x=0, xanchor="left"),
+        colorway=["#1E3A8A", "#0F766E", "#B45309", "#B91C1C", "#64748B"],
+        xaxis=dict(gridcolor="#E2E8F0", linecolor="#CBD5E1", zerolinecolor="#94A3B8",
+                   ticks="outside", tickcolor="#CBD5E1"),
+        yaxis=dict(gridcolor="#E2E8F0", linecolor="#CBD5E1", zerolinecolor="#94A3B8"),
+        hoverlabel=dict(bgcolor="#0F172A", font=dict(color="#FFFFFF", family=_FONT, size=12),
+                        bordercolor="#0F172A"),
+        legend=dict(font=dict(size=12), bgcolor="rgba(0,0,0,0)"),
+    )
+)
+pio.templates.default = "campus"
+
+# ---------- Streamlit: stylesheet ----------
 st.markdown(
     """
-    <style>
-    .main-header { font-size: 2.5rem; font-weight: 700; color: #1D3557; margin-bottom: 0.2rem; }
-    .sub-header { font-size: 1.1rem; color: #457B9D; margin-bottom: 1.5rem; }
-    .tier-low  { background-color: #D8F3DC; color: #1B4332; padding: 1rem; border-radius: 8px; border-left: 6px solid #2A9D8F; }
-    .tier-med  { background-color: #FFF3CD; color: #856404; padding: 1rem; border-radius: 8px; border-left: 6px solid #E9C46A; }
-    .tier-high { background-color: #F8D7DA; color: #842029; padding: 1rem; border-radius: 8px; border-left: 6px solid #E63946; }
-    .metric-card { background-color: #F1FAEE; padding: 1rem; border-radius: 8px; border-left: 4px solid #1D3557; }
-    .explain-box { background-color: #F8F9FA; border: 1px solid #DEE2E6; border-radius: 10px; padding: 1rem 1.25rem; margin-top: 0.5rem; margin-bottom: 1rem; }
-    .explain-box h4 { margin-top: 0; color: #1D3557; }
-    .factor-chip { display: inline-block; padding: 0.35rem 0.75rem; margin: 0.15rem 0.25rem 0.15rem 0; border-radius: 999px; font-size: 0.85rem; font-weight: 600; }
-    .chip-risk { background-color: #F8D7DA; color: #842029; }
-    .chip-prot { background-color: #D8F3DC; color: #1B4332; }
-    .step-badge { display: inline-block; background-color: #1D3557; color: white; padding: 0.15rem 0.6rem; border-radius: 6px; font-weight: 700; font-size: 0.8rem; margin-right: 0.5rem; }
-    .delta-good { color: #1B4332; font-weight: 700; }
-    .delta-bad  { color: #842029; font-weight: 700; }
-    .delta-flat { color: #6C757D; font-weight: 700; }
-    </style>
-    """,
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root{
+  --ink:#0F172A; --text:#334155; --muted:#64748B;
+  --bg:#F4F6FA; --surface:#FFFFFF; --line:#E2E8F0;
+  --brand:#14306B; --brand-2:#1E4FB8; --brand-soft:#EAF0FB;
+  --ok:#0F766E;  --ok-bg:#ECFDF5;  --ok-line:#A7E3D0;
+  --warn:#92400E; --warn-bg:#FFFBEB; --warn-line:#F5D98B;
+  --bad:#B91C1C;  --bad-bg:#FEF2F2; --bad-line:#F3B4B4;
+  --radius:12px;
+  --shadow:0 1px 2px rgba(15,23,42,.04), 0 2px 8px rgba(15,23,42,.05);
+}
+
+/* ---------- Base ---------- */
+html, body, [class*="css"], .stApp, .stMarkdown, button, input, textarea, select{
+  font-family:'Inter','Segoe UI',Roboto,Helvetica,Arial,sans-serif !important;
+}
+.stApp{ background:var(--bg); color:var(--text); }
+.stApp::before{ content:""; position:fixed; top:0; left:0; right:0; height:3px;
+  background:linear-gradient(90deg,var(--brand),var(--brand-2)); z-index:999; }
+.block-container{ padding-top:2.2rem; padding-bottom:4rem; max-width:1280px; }
+#MainMenu, footer{ visibility:hidden; }
+header[data-testid="stHeader"]{ background:transparent; }
+h1,h2,h3,h4{ color:var(--ink); letter-spacing:-0.01em; font-weight:650; }
+h2{ font-size:1.35rem; margin-top:1.6rem; }
+h3{ font-size:1.1rem; }
+p, li{ line-height:1.6; }
+hr{ border:none; border-top:1px solid var(--line); margin:1.75rem 0; }
+
+/* ---------- Page title ---------- */
+.main-header{
+  font-size:1.85rem; font-weight:700; color:var(--ink);
+  letter-spacing:-0.02em; margin:0 0 .25rem 0; line-height:1.2;
+}
+.sub-header{
+  font-size:1rem; font-weight:400; color:var(--muted);
+  margin:0 0 1.5rem 0; max-width:820px;
+}
+
+/* ---------- Sidebar ---------- */
+section[data-testid="stSidebar"]{
+  background:var(--surface); border-right:1px solid var(--line);
+}
+section[data-testid="stSidebar"] .block-container{ padding-top:1.5rem; }
+section[data-testid="stSidebar"] h1,
+section[data-testid="stSidebar"] h2,
+section[data-testid="stSidebar"] h3{
+  font-size:.78rem; text-transform:uppercase; letter-spacing:.08em;
+  color:var(--muted); font-weight:600; margin:1.25rem 0 .5rem;
+}
+section[data-testid="stSidebar"] label p{ font-size:.85rem; font-weight:500; color:var(--text); }
+
+/* ---------- Tabs ---------- */
+div[data-testid="stTabs"] [role="tablist"]{
+  gap:.25rem; border-bottom:1px solid var(--line); margin-bottom:1rem;
+}
+div[data-testid="stTabs"] button[role="tab"]{
+  padding:.7rem 1rem; border-radius:8px 8px 0 0; background:transparent;
+  color:var(--muted); font-weight:500; font-size:.95rem; height:auto;
+}
+div[data-testid="stTabs"] button[role="tab"]:hover{ color:var(--brand); background:var(--brand-soft); }
+div[data-testid="stTabs"] button[role="tab"][aria-selected="true"]{
+  color:var(--brand); font-weight:650;
+}
+div[data-testid="stTabs"] [data-baseweb="tab-highlight"]{ background:var(--brand-2); height:3px; }
+div[data-testid="stTabs"] [data-baseweb="tab-border"]{ display:none; }
+
+/* ---------- Buttons ---------- */
+.stButton > button, .stDownloadButton > button{
+  border-radius:10px; font-weight:600; font-size:.95rem;
+  padding:.65rem 1.1rem; min-height:44px; transition:all .15s ease;
+  border:1px solid var(--line); background:var(--surface); color:var(--brand);
+  box-shadow:var(--shadow);
+}
+.stButton > button:hover, .stDownloadButton > button:hover{
+  border-color:var(--brand-2); color:var(--brand-2); background:var(--brand-soft);
+}
+.stButton > button[kind="primary"], .stButton > button[data-testid="stBaseButton-primary"]{
+  background:var(--brand); color:#fff; border-color:var(--brand);
+}
+.stButton > button[kind="primary"]:hover,
+.stButton > button[data-testid="stBaseButton-primary"]:hover{
+  background:var(--brand-2); border-color:var(--brand-2); color:#fff;
+}
+.stButton > button:focus-visible, .stDownloadButton > button:focus-visible,
+button[role="tab"]:focus-visible{ outline:3px solid rgba(30,79,184,.35); outline-offset:2px; }
+
+/* ---------- Inputs ---------- */
+div[data-baseweb="input"], div[data-baseweb="select"] > div, div[data-baseweb="textarea"]{
+  border-radius:10px !important; background:var(--surface) !important;
+  border-color:var(--line) !important;
+}
+div[data-baseweb="input"]:focus-within, div[data-baseweb="select"] > div:focus-within{
+  border-color:var(--brand-2) !important; box-shadow:0 0 0 3px rgba(30,79,184,.15) !important;
+}
+label[data-testid="stWidgetLabel"] p{ font-weight:500; color:var(--ink); font-size:.88rem; }
+div[data-testid="stSlider"] [role="slider"]{ background:var(--brand-2); }
+div[data-testid="stFileUploader"] section{
+  border:1.5px dashed #B6C2D6; border-radius:var(--radius); background:var(--surface);
+}
+div[data-testid="stFileUploader"] section:hover{ border-color:var(--brand-2); background:var(--brand-soft); }
+
+/* ---------- Metrics ---------- */
+div[data-testid="stMetric"]{
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:1rem 1.15rem; box-shadow:var(--shadow);
+}
+div[data-testid="stMetricLabel"] p{
+  font-size:.78rem; text-transform:uppercase; letter-spacing:.06em;
+  color:var(--muted); font-weight:600;
+}
+div[data-testid="stMetricValue"]{ color:var(--ink); font-weight:700; font-size:1.7rem; }
+
+/* ---------- Expanders (Step 1-6) ---------- */
+div[data-testid="stExpander"]{
+  background:var(--surface); border:1px solid var(--line) !important;
+  border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom:.75rem; overflow:hidden;
+}
+div[data-testid="stExpander"] summary{ padding:.85rem 1.1rem; font-weight:600; color:var(--ink); }
+div[data-testid="stExpander"] summary:hover{ background:var(--brand-soft); }
+div[data-testid="stExpander"] details > div{ padding:.25rem 1.1rem 1.1rem; }
+
+/* ---------- Data tables & charts ---------- */
+div[data-testid="stDataFrame"]{
+  border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow);
+}
+div[data-testid="stPlotlyChart"]{
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:.5rem; box-shadow:var(--shadow);
+}
+div[data-testid="stAlert"]{ border-radius:var(--radius); border:1px solid var(--line); }
+div[data-testid="stCaptionContainer"]{ color:var(--muted); }
+
+/* ---------- Risk tier banners ---------- */
+.tier-low, .tier-med, .tier-high{
+  padding:1.1rem 1.35rem; border-radius:var(--radius); border:1px solid;
+  border-left-width:6px; box-shadow:var(--shadow); margin:.5rem 0 1rem;
+}
+.tier-low h3, .tier-med h3, .tier-high h3{
+  font-size:.78rem !important; text-transform:uppercase; letter-spacing:.08em;
+  font-weight:700; margin:0 0 .5rem !important; color:inherit !important;
+}
+.tier-low p, .tier-med p, .tier-high p{ margin:.15rem 0; color:var(--ink); }
+.tier-low { background:var(--ok-bg);   border-color:var(--ok-line);   border-left-color:var(--ok);   color:var(--ok); }
+.tier-med { background:var(--warn-bg); border-color:var(--warn-line); border-left-color:#D97706;      color:var(--warn); }
+.tier-high{ background:var(--bad-bg);  border-color:var(--bad-line);  border-left-color:var(--bad);   color:var(--bad); }
+
+/* ---------- Cards ---------- */
+.metric-card{
+  background:var(--surface); border:1px solid var(--line); border-top:3px solid var(--brand);
+  border-radius:var(--radius); padding:1.1rem 1.25rem; box-shadow:var(--shadow); height:100%;
+}
+.metric-card h4{
+  margin:0 0 .4rem; font-size:.78rem; text-transform:uppercase;
+  letter-spacing:.07em; color:var(--muted); font-weight:600;
+}
+.metric-card p{ margin:.1rem 0; color:var(--text); font-size:.9rem; }
+.metric-card p strong{ color:var(--ink); font-size:1.5rem; font-weight:700; letter-spacing:-0.01em; }
+
+.explain-box{
+  background:var(--brand-soft); border:1px solid #D5E0F5; border-left:4px solid var(--brand-2);
+  border-radius:var(--radius); padding:1rem 1.25rem; margin:.25rem 0 1rem;
+  color:var(--text); font-size:.94rem; line-height:1.6;
+}
+.explain-box h4{
+  margin:0 0 .5rem; color:var(--ink); font-size:1rem; font-weight:650;
+  display:flex; align-items:center; gap:.5rem;
+}
+
+/* ---------- Chips, badges, deltas ---------- */
+.factor-chip{
+  display:inline-block; padding:.3rem .75rem; margin:.2rem .3rem .2rem 0;
+  border-radius:999px; font-size:.82rem; font-weight:600; border:1px solid transparent;
+}
+.chip-risk{ background:var(--bad-bg); color:var(--bad); border-color:var(--bad-line); }
+.chip-prot{ background:var(--ok-bg);  color:var(--ok);  border-color:var(--ok-line); }
+
+.step-badge{
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:1.6rem; height:1.6rem; padding:0 .4rem; border-radius:999px;
+  background:var(--brand); color:#fff; font-weight:700; font-size:.8rem; margin-right:.5rem;
+}
+.delta-good{ color:var(--ok);  font-weight:700; }
+.delta-bad { color:var(--bad); font-weight:700; }
+.delta-flat{ color:var(--muted); font-weight:700; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px){
+  .block-container{ padding:1.25rem 1rem 3rem; }
+  .main-header{ font-size:1.5rem; }
+}
+@media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+</style>
+""",
     unsafe_allow_html=True,
 )
-
 
 # ==========================================================
 # MODEL AND DATA CACHING

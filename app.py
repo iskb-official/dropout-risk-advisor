@@ -906,7 +906,7 @@ def build_batch_pdf_report(
         rows = [["Student Idx", "Probability", "Action"]]
         for _, row in subset.head(60).iterrows():
             rows.append([str(row.get("student_index", "")), f"{row['probability']:.2%}", str(row["action"])])
-        story.append(_std_table(rows, colWidths=[3 * cm, 3 * cm, 10 * cm]))
+        story.append(_std_table(rows, col_widths=[3 * cm, 3 * cm, 10 * cm]))
         if len(subset) > 60:
             story.append(Paragraph(f"<i>Showing first 60 of {len(subset)} students. Full list in the annotated CSV.</i>", S["small"]))
         story.append(Spacer(1, 8))

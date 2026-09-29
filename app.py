@@ -1,6 +1,3 @@
-Here is the cleaned and corrected script. I've fixed the broken markdown, indentation errors, malformed f-strings, and the split regex that was causing syntax issues. The logic and structure remain identical to your original intent.
-
-```python
 # file: app.py
 # Run with: streamlit run app.py
 
@@ -477,4 +474,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-```

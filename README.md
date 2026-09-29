@@ -212,10 +212,7 @@ If you use this work in research, please cite:
 
 ## 📞 Contact
 
-**Md Shakib Hasan**  
-- Faculty of Artificial Intelligence in Education  
-- Central China Normal University
-- Email: shakib@mails.ccnu.edu.cn
+REMOVED! Project Under Peer Review.
 
 ## 📄 License
 

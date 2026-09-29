@@ -488,7 +488,7 @@ def build_pdf_report(student_inputs, p_dropout, band, action, shap_vals, feature
     story = []
 
     # Header
-    story.append(Paragraph("🎓 Student Dropout Risk Report", title_style))
+    story.append(Paragraph("Student Dropout Risk Report", title_style))
     story.append(
         Paragraph(
             f"Capacity-Aware Decision Support System · Generated "

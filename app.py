@@ -32,6 +32,8 @@ from reportlab.platypus import (
     KeepTogether,
 )
 from reportlab.platypus.flowables import HRFlowable
+from reportlab.lib.utils import ImageReader
+from reportlab.pdfgen import canvas as pdf_canvas
 
 # ==========================================================
 # PAGE CONFIG MUST BE FIRST
@@ -55,6 +57,42 @@ HIGH_TH = 0.50
 CAPACITY_LIMIT = 200
 MODEL_NAME = "XGBoost (gradient-boosted trees)"
 MODEL_VERSION = "v2.0 - Decision Support Prototype"
+
+# ==========================================================
+# WHITE-LABEL / INTERNATIONALIZATION CONFIG
+# Presentation-only configuration. ML/business logic is frozen.
+# ==========================================================
+PRODUCT_NAME = "Capacity-Aware Decision Support System"
+INSTITUTION_NAME = "Your Institution"
+SUPPORT_URL = ""
+MODEL_CARD_URL = ""
+LANGUAGE = "en"
+
+COLORS = {
+    "brand": "#3B5BDB", "navy": "#1B2A5C", "ink": "#0E1B3D",
+    "text": "#5A6A84", "muted": "#8795AA", "background": "#F4F6FB",
+    "surface": "#FFFFFF", "line": "#E4EAF2", "brand_soft": "#EEF3FF",
+    "low": "#12A594", "medium": "#F5A524", "high": "#DC3F4A",
+}
+
+UI = {
+    "en": {
+        "welcome_eyebrow": "Welcome",
+        "welcome_title": "A clearer path from prediction to action.",
+        "welcome_subtitle": "Review interpretable risk signals, explore what-if scenarios, and route support with the current capacity-aware workflow.",
+        "privacy": "Session-only workspace. Student information is not intentionally persisted by this app.",
+        "start": "Start assessment",
+        "tour": "20-second guided tour",
+        "tour_1": "Profile", "tour_1_d": "Enter the visible student indicators and run one assessment.",
+        "tour_2": "Explain", "tour_2_d": "Read SHAP drivers and compare the profile with the cohort.",
+        "tour_3": "What-if", "tour_3_d": "Test one indicator at a time and save scenarios for comparison.",
+        "tour_4": "Action + PDF", "tour_4_d": "Review the intervention plan and export the report.",
+        "another": "Assess another student", "generated": "Assessment generated",
+        "report_ready": "Report ready", "decision_support": "Decision support, not decision maker.",
+        "session_data": "Data stays in this browser session.",
+    }
+}
+TEXT = UI.get(LANGUAGE, UI["en"])
 
 FEATURE_LABELS = {
     "Curricular units 1st sem (approved)": "1st Sem Approved Units",
@@ -84,7 +122,7 @@ pio.templates["campus"] = go.layout.Template(
     layout=go.Layout(
         font=dict(family=_FONT, size=12.5, color="#4A5876"),
         title=dict(font=dict(size=14, color="#0E1B3D", family=_FONT), x=0, xanchor="left"),
-        colorway=["#3B5BDB", "#12A594", "#F5A524", "#DC3F4A", "#64748B"],
+        colorway=[COLORS["brand"], COLORS["navy"], "#7183A6", "#A5B1C4", "#4D5E79"],
         xaxis=dict(gridcolor="#EEF2F8", linecolor="#D5DCE8", zerolinecolor="#94A3B8",
                    ticks="outside", tickcolor="#D5DCE8", title=dict(font=dict(size=11.5, color="#7C89A6"))),
         yaxis=dict(gridcolor="#EEF2F8", linecolor="#D5DCE8", zerolinecolor="#94A3B8",
@@ -99,7 +137,7 @@ pio.templates.default = "campus"
 st.markdown(
     """
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap');
+
 
 :root{
   color-scheme:light;
@@ -694,6 +732,56 @@ components.html(
     height=0,
 )
 
+
+# ==========================================================
+# FINAL PRODUCT HARDENING
+# Overflow containment, accessibility, responsive density, motion.
+# ==========================================================
+st.markdown(
+    f"""
+    <style>
+      :root {{
+        --brand:{COLORS["brand"]}; --navy:{COLORS["navy"]}; --ink:{COLORS["ink"]};
+        --bg:{COLORS["background"]}; --surface:{COLORS["surface"]}; --line:{COLORS["line"]};
+        --low:{COLORS["low"]}; --medium:{COLORS["medium"]}; --high:{COLORS["high"]};
+      }}
+      .privacy-strip,.welcome,.tour-shell,.closing,.footer-shell{{min-width:0;overflow-wrap:anywhere;}}
+      .privacy-strip{{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin:-.25rem 0 .85rem;padding:.5rem .72rem;border:1px solid #DCE5F2;border-radius:12px;background:rgba(255,255,255,.76);color:#64748B;font-size:.71rem;line-height:1.4;}}
+      .privacy-dot{{width:7px;height:7px;flex:none;border-radius:50%;background:var(--brand);}}
+      .welcome{{border:1px solid #DCE5F2;border-radius:20px;background:linear-gradient(180deg,#FFFFFF 0%,#F8FAFF 100%);box-shadow:0 16px 38px rgba(27,42,92,.08);padding:1.25rem 1.3rem 1.15rem;margin:0 0 1rem;animation:uiFadeUp .3s ease both;}}
+      .welcome-eyebrow,.tour-eyebrow{{display:inline-flex;padding:.27rem .56rem;border-radius:999px;background:#EEF3FF;border:1px solid #DCE6FF;color:#3154D9;font-size:.64rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;}}
+      .welcome-title{{margin:.65rem 0 .25rem;color:var(--ink);font:800 1.42rem/1.15 'Inter','Segoe UI',Arial,sans-serif;letter-spacing:-.03em;}}
+      .welcome-sub{{max-width:780px;margin:0;color:#5A6A84;font-size:.86rem;line-height:1.6;}}
+      .welcome-steps{{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.62rem;margin-top:1rem;}}
+      .welcome-step{{min-width:0;border:1px solid #E4EAF2;border-radius:14px;padding:.75rem .8rem;background:#fff;}}
+      .welcome-step b{{display:block;color:var(--ink);font-size:.81rem;margin-bottom:.18rem;}}
+      .welcome-step span{{color:#7C8798;font-size:.72rem;line-height:1.5;}}
+      .tour-grid{{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.55rem;margin-top:.62rem;}}
+      .tour-item{{min-width:0;padding:.65rem .7rem;border:1px solid #E4EAF2;border-radius:12px;background:#fff;}}
+      .tour-item b{{display:block;color:var(--ink);font-size:.77rem;margin-bottom:.14rem;}}
+      .tour-item span{{color:#7C8798;font-size:.69rem;line-height:1.45;}}
+      .closing{{margin-top:1.05rem;border:1px solid #DCE5F2;border-radius:18px;background:linear-gradient(135deg,#F7F9FF,#FFFFFF);box-shadow:0 10px 26px rgba(27,42,92,.06);padding:1rem 1.05rem;}}
+      .closing-title{{color:var(--ink);font-size:1rem;font-weight:800;margin-bottom:.15rem;}}
+      .closing-sub{{color:#67758B;font-size:.78rem;line-height:1.55;}}
+      .footer-shell{{margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;color:#7C8798;font-size:.69rem;line-height:1.5;}}
+      .footer-shell b{{color:#52647E;}}
+      .progress-shell{{margin:.4rem 0 .1rem;}}
+      .progress-track{{height:7px;background:#EAF0F7;border-radius:999px;overflow:hidden;}}
+      .progress-fill{{height:100%;border-radius:999px;background:var(--brand);transition:width .45s ease;}}
+      .sr-only{{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;}}
+      [data-testid="stHorizontalBlock"],[data-testid="column"],[data-testid="stVerticalBlock"]{{min-width:0!important;}}
+      .stMarkdown,[data-testid="stMarkdownContainer"],[data-testid="stCaptionContainer"]{{overflow-wrap:anywhere;}}
+      .stButton>button,.stDownloadButton>button{{white-space:normal!important;height:auto!important;min-height:42px!important;line-height:1.25!important;}}
+      .stButton>button:focus-visible,.stDownloadButton>button:focus-visible,input:focus-visible,textarea:focus-visible,[role="tab"]:focus-visible{{outline:3px solid rgba(59,91,219,.30)!important;outline-offset:2px!important;}}
+      [data-testid="stPlotlyChart"]{{min-width:0!important;max-width:100%!important;}}
+      @media(max-width:900px){{.welcome-steps,.tour-grid{{grid-template-columns:repeat(2,minmax(0,1fr));}}}}
+      @media(max-width:600px){{.welcome-steps,.tour-grid{{grid-template-columns:1fr;}}.welcome-title{{font-size:1.22rem;}}}}
+      @media(prefers-reduced-motion:reduce){{*,*::before,*::after{{animation:none!important;transition:none!important;scroll-behavior:auto!important;}}}}
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 # ==========================================================
 # MODEL AND DATA CACHING
 # ==========================================================
@@ -805,20 +893,18 @@ def _chart_label(feature: str) -> str:
 def _plot_base(height=320, margin=None):
     fig = go.Figure()
     fig.update_layout(
-        autosize=True,
-        height=height,
-        margin=margin or dict(l=46, r=22, t=54, b=48),
-        plot_bgcolor="rgba(0,0,0,0)",
-        paper_bgcolor="rgba(0,0,0,0)",
-        font=dict(family=_FONT, size=11.5, color="#5A6A84"),
-        title=dict(font=dict(size=13, color="#12213F", family=_FONT), x=0, xanchor="left", y=.98),
-        legend=dict(bgcolor="rgba(255,255,255,.88)", bordercolor="#E4EAF2", borderwidth=1, font=dict(size=10.5)),
-        hoverlabel=dict(bgcolor="#12213F", bordercolor="#12213F", font=dict(color="#FFFFFF", family=_FONT, size=11)),
+        autosize=True, height=height,
+        margin=margin or dict(l=52, r=24, t=54, b=58),
+        plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
+        font=dict(family=_FONT, size=11.5, color=COLORS["text"]),
+        title=dict(font=dict(size=13, color=COLORS["ink"], family=_FONT), x=0, xanchor="left", y=.99, yanchor="top"),
+        hoverlabel=dict(bgcolor=COLORS["ink"], bordercolor=COLORS["ink"], font=dict(color="#FFFFFF", family=_FONT, size=11)),
     )
-    fig.update_xaxes(automargin=True)
-    fig.update_yaxes(automargin=True)
+    fig.update_xaxes(automargin=True, gridcolor="#EEF2F7", linecolor="#D9E1EC",
+                     tickfont=dict(size=10, color=COLORS["muted"]), title_font=dict(size=10.5, color=COLORS["muted"]))
+    fig.update_yaxes(automargin=True, gridcolor="#EEF2F7", linecolor="#D9E1EC",
+                     tickfont=dict(size=10, color=COLORS["muted"]), title_font=dict(size=10.5, color=COLORS["muted"]))
     return fig
-
 
 def plot_gauge(probability, band):
     color = "#12A594" if band == "Low Risk" else "#F5A524" if band == "Medium Risk" else "#DC4A59"
@@ -850,199 +936,148 @@ def plot_shap_waterfall(feature_names, shap_values, top_n=6):
     idx = np.argsort(np.abs(shap_values))[-top_n:][::-1]
     names = [friendly_name(feature_names[i]) for i in idx]
     axis_names = [_chart_label(feature_names[i]) for i in idx]
-    vals = shap_values[idx]
-    colors_list = ["#DC4A59" if v > 0 else "#12A594" for v in vals]
-    fig = _plot_base(height=355, margin=dict(l=124, r=26, t=36, b=54))
+    vals = np.asarray(shap_values[idx], dtype=float)
+    max_abs = float(np.max(np.abs(vals))) if len(vals) else 1.0
+    pad = max(0.08, max_abs * 0.32)
+    colors_list = [COLORS["high"] if v > 0 else COLORS["low"] for v in vals]
+    fig = _plot_base(height=360, margin=dict(l=128, r=34, t=42, b=62))
     fig.add_trace(go.Bar(
-        x=vals[::-1],
-        y=axis_names[::-1],
-        orientation="h",
-        marker_color=colors_list[::-1],
+        x=vals[::-1], y=axis_names[::-1], orientation="h",
+        marker_color=colors_list[::-1], marker_line_width=0,
         customdata=np.array(names[::-1], dtype=object),
-        text=[f"{v:+.2f}" for v in vals[::-1]],
-        textposition="outside",
-        cliponaxis=False,
+        text=[f"{v:+.2f}" for v in vals[::-1]], textposition="outside", cliponaxis=False,
         hovertemplate="<b>%{customdata}</b><br>SHAP impact: %{x:+.3f}<extra></extra>",
     ))
     fig.update_layout(
-        title="Top risk drivers",
-        showlegend=False,
-        xaxis_title="SHAP impact (log-odds)",
+        title="Top risk drivers", showlegend=False,
+        xaxis=dict(range=[float(np.min(vals)-pad) if len(vals) else -1, float(np.max(vals)+pad) if len(vals) else 1],
+                   zeroline=True, zerolinecolor="#9EABC0", zerolinewidth=1.5, title="SHAP impact (log-odds)"),
         yaxis_title="",
-        xaxis=dict(zeroline=True, zerolinecolor="#9EABC0", zerolinewidth=1.5, showgrid=True, gridcolor="#EEF2F7"),
     )
     return fig
-
 
 def plot_contribution_donut(shap_values):
-    pos = float(np.sum(shap_values[shap_values > 0]))
-    neg = float(np.sum(np.abs(shap_values[shap_values < 0])))
-    fig = _plot_base(height=315, margin=dict(l=18, r=18, t=48, b=18))
+    pos = float(np.sum(shap_values[shap_values > 0])); neg = float(np.sum(np.abs(shap_values[shap_values < 0])))
+    fig = _plot_base(height=320, margin=dict(l=18, r=18, t=44, b=76))
     fig.add_trace(go.Pie(
-        labels=["Risk-increasing", "Risk-reducing"],
-        values=[pos, neg],
-        hole=0.68,
-        marker_colors=["#DC4A59", "#12A594"],
-        textinfo="percent",
+        labels=["Risk-increasing", "Risk-reducing"], values=[pos, neg], hole=0.68,
+        marker_colors=[COLORS["high"], COLORS["low"]], textinfo="percent",
         hovertemplate="<b>%{label}</b><br>Total SHAP magnitude: %{value:.3f}<br>%{percent}<extra></extra>",
-        sort=False,
+        sort=False, direction="clockwise",
     ))
-    fig.update_layout(
-        title="Contribution balance",
-        showlegend=True,
-        legend=dict(orientation="h", x=0.5, xanchor="center", y=-0.02, yanchor="top", font=dict(size=10)),
-    )
+    fig.update_layout(title="Contribution balance", showlegend=True,
+                      legend=dict(orientation="h", x=0.5, xanchor="center", y=-0.10, yanchor="top", font=dict(size=10)))
     return fig
 
-
 def plot_threshold_explorer(probability):
-    fig = _plot_base(height=245, margin=dict(l=28, r=24, t=54, b=54))
-    colors_band = ["rgba(18,165,148,.72)", "rgba(245,165,36,.78)", "rgba(220,74,89,.76)"]
-    names = ["Low", "Medium", "High"]
-    widths = [LOW_TH, HIGH_TH - LOW_TH, 1.0 - HIGH_TH]
+    fig = _plot_base(height=250, margin=dict(l=28, r=24, t=48, b=58))
+    colors_band = ["rgba(18,165,148,.72)", "rgba(245,165,36,.78)", "rgba(220,63,74,.76)"]
+    names = ["Low", "Medium", "High"]; widths = [LOW_TH, HIGH_TH-LOW_TH, 1.0-HIGH_TH]
     starts = np.cumsum([0] + widths[:-1])
     for name, width, start_x, color in zip(names, widths, starts, colors_band):
         fig.add_trace(go.Bar(
             x=[width], y=["Risk band"], orientation="h", base=[start_x],
             marker_color=color, marker_line_width=0, name=name,
             text=[name], textposition="inside", insidetextanchor="middle",
-            hovertemplate=f"{name} Risk<br>Range: {start_x:.0%}–{start_x+width:.0%}<extra></extra>",
+            hovertemplate=f"{name} Risk<br>Range: {start_x:.0%}-{start_x+width:.0%}<extra></extra>",
         ))
     fig.add_trace(go.Scatter(
         x=[probability], y=["Risk band"], mode="markers",
-        marker=dict(size=17, color="#12213F", line=dict(width=3, color="#FFFFFF")),
-        customdata=[f"{probability:.1%}"],
-        name="Student",
+        marker=dict(size=18, color=COLORS["ink"], line=dict(width=3, color="#FFFFFF")),
+        customdata=[f"{probability:.1%}"], name="Student",
         hovertemplate="<b>This student</b><br>Dropout probability: %{customdata}<extra></extra>",
     ))
-    fig.update_layout(
-        title="Risk-band placement",
-        barmode="stack",
-        showlegend=False,
-        xaxis=dict(range=[0, 1], tickformat=".0%", title="Dropout probability", showgrid=False),
-        yaxis=dict(showticklabels=False),
-    )
+    fig.update_layout(title="Risk-band placement", barmode="stack", showlegend=False,
+                      xaxis=dict(range=[0,1], tickformat=".0%", title="Dropout probability", showgrid=False),
+                      yaxis=dict(showticklabels=False))
     return fig
-
 
 def plot_radar_profile(user_input, medians, top_features):
     labels, student_vals, cohort_vals, hover = [], [], [], []
     for feat in top_features:
-        val = float(user_input.get(feat, medians.get(feat, 0.0)))
-        med = float(medians.get(feat, 0.0))
-        denom = med if med > 0 else 1.0
-        student_norm = max(0.0, min(1.0, val / denom)) if denom else 0.0
-        labels.append(_chart_label(feat))
-        student_vals.append(student_norm)
-        cohort_vals.append(1.0)
+        val=float(user_input.get(feat, medians.get(feat, 0.0))); med=float(medians.get(feat,0.0))
+        denom=med if med>0 else 1.0
+        labels.append(_chart_label(feat)); student_vals.append(max(0.0,min(1.0,val/denom))); cohort_vals.append(1.0)
         hover.append(f"{friendly_name(feat)}<br>Student: {val:.2f}<br>Cohort median: {med:.2f}")
     if labels:
-        labels_closed = labels + [labels[0]]
-        student_closed = student_vals + [student_vals[0]]
-        cohort_closed = cohort_vals + [cohort_vals[0]]
-        hover_closed = hover + [hover[0]]
+        labels_closed=labels+[labels[0]]; student_closed=student_vals+[student_vals[0]]
+        cohort_closed=cohort_vals+[cohort_vals[0]]; hover_closed=hover+[hover[0]]
     else:
-        labels_closed, student_closed, cohort_closed, hover_closed = [], [], [], []
-
-    fig = _plot_base(height=385, margin=dict(l=44, r=44, t=42, b=46))
-    fig.add_trace(go.Scatterpolar(
-        r=student_closed, theta=labels_closed, fill="toself", name="Student",
-        line=dict(color="#2C467E", width=2.5), fillcolor="rgba(44,70,126,.18)",
-        text=hover_closed, hovertemplate="%{text}<extra></extra>",
-    ))
-    fig.add_trace(go.Scatterpolar(
-        r=cohort_closed, theta=labels_closed, fill="toself", name="Cohort median",
-        line=dict(color="#F5A524", width=1.8), fillcolor="rgba(245,165,36,.08)",
-        hovertemplate="Cohort median (normalized)<extra></extra>",
-    ))
-    fig.update_layout(
-        title="Profile vs cohort median",
-        polar=dict(radialaxis=dict(visible=True, range=[0, 1], tickformat=".0f", tickfont=dict(size=9)),
-                   angularaxis=dict(tickfont=dict(size=9.5))),
-        legend=dict(orientation="h", x=0.5, xanchor="center", y=-0.03, font=dict(size=10.5)),
-    )
+        labels_closed=[]; student_closed=[]; cohort_closed=[]; hover_closed=[]
+    fig=_plot_base(height=400, margin=dict(l=52,r=52,t=42,b=78))
+    fig.add_trace(go.Scatterpolar(r=student_closed,theta=labels_closed,fill="toself",name="Student",
+                                  line=dict(color="#2C467E",width=2.5),fillcolor="rgba(44,70,126,.16)",
+                                  text=hover_closed,hovertemplate="%{text}<extra></extra>"))
+    fig.add_trace(go.Scatterpolar(r=cohort_closed,theta=labels_closed,fill="toself",name="Cohort median",
+                                  line=dict(color=COLORS["medium"],width=1.8),fillcolor="rgba(245,165,36,.08)",
+                                  hovertemplate="Cohort median (normalized)<extra></extra>"))
+    fig.update_layout(title="Profile vs cohort median",
+                      polar=dict(radialaxis=dict(visible=True,range=[0,1],tickformat=".0f",tickfont=dict(size=9)),
+                                 angularaxis=dict(tickfont=dict(size=9))),
+                      legend=dict(orientation="h",x=0.5,xanchor="center",y=-0.12,yanchor="top",font=dict(size=10)))
     return fig
-
 
 def plot_counterfactual_curve(base_input, feature, current_value, model, medians, feature_cols):
     if feature in ("Curricular units 1st sem (approved)", "Curricular units 2nd sem (approved)"):
-        sweep = np.arange(0, 21, 1)
+        sweep=np.arange(0,21,1)
     elif "grade" in feature.lower():
-        sweep = np.arange(0, 20.5, 0.5)
+        sweep=np.arange(0,20.5,0.5)
     elif feature in ("Age at enrollment",):
-        sweep = np.arange(17, 66, 1)
-    elif feature in ("Tuition fees up to date", "Scholarship holder", "Gender", "Debtor"):
-        sweep = np.array([0, 1])
+        sweep=np.arange(17,66,1)
+    elif feature in ("Tuition fees up to date","Scholarship holder","Gender","Debtor"):
+        sweep=np.array([0,1])
     else:
-        med = float(medians.get(feature, 0.0))
-        sweep = np.linspace(max(0, med - 5), med + 5, 25)
-    probs = []
+        med=float(medians.get(feature,0.0)); sweep=np.linspace(max(0,med-5),med+5,25)
+    probs=[]
     for v in sweep:
-        row = dict(base_input)
-        row[feature] = float(v)
-        x = pd.DataFrame([{f: row.get(f, float(medians[f])) for f in feature_cols}])
-        probs.append(float(model.predict_proba(x)[:, 1]))
-    probs = np.array(probs)
-    cur_row = pd.DataFrame([{f: base_input.get(f, float(medians[f])) for f in feature_cols}])
-    cur_prob = float(model.predict_proba(cur_row)[:, 1])
+        row=dict(base_input); row[feature]=float(v)
+        x=pd.DataFrame([{f:row.get(f,float(medians[f])) for f in feature_cols}])
+        probs.append(float(model.predict_proba(x)[:,1]))
+    probs=np.array(probs)
+    cur_row=pd.DataFrame([{f:base_input.get(f,float(medians[f])) for f in feature_cols}])
+    cur_prob=float(model.predict_proba(cur_row)[:,1])
 
-    fig = _plot_base(height=355, margin=dict(l=56, r=26, t=52, b=56))
-    fig.add_hrect(y0=0, y1=LOW_TH, fillcolor="rgba(18,165,148,.08)", line_width=0)
-    fig.add_hrect(y0=LOW_TH, y1=HIGH_TH, fillcolor="rgba(245,165,36,.09)", line_width=0)
-    fig.add_hrect(y0=HIGH_TH, y1=1.0, fillcolor="rgba(220,74,89,.08)", line_width=0)
-    fig.add_trace(go.Scatter(
-        x=sweep, y=probs, mode="lines", line=dict(color="#2C467E", width=3),
-        name="Predicted probability",
-        hovertemplate=f"{friendly_name(feature)}: %{{x}}<br>Probability: %{{y:.1%}}<extra></extra>",
-    ))
-    fig.add_trace(go.Scatter(
-        x=[current_value], y=[cur_prob], mode="markers",
-        marker=dict(size=15, color="#DC4A59", line=dict(width=2.5, color="#FFFFFF")),
-        name="Current value", hovertemplate=f"Current value: {current_value}<br>Probability: {cur_prob:.1%}<extra></extra>",
-    ))
-    fig.update_layout(
-        title=f"What-if response · {_chart_label(feature)}",
-        xaxis_title=_chart_label(feature),
-        yaxis_title="Dropout probability",
-        xaxis=dict(automargin=True),
-        yaxis=dict(range=[0, 1], tickformat=".0%", automargin=True),
-        legend=dict(orientation="h", x=0, y=1.03, yanchor="bottom", font=dict(size=10)),
-    )
+    fig=_plot_base(height=370,margin=dict(l=60,r=28,t=72,b=90))
+    fig.add_hrect(y0=0,y1=LOW_TH,fillcolor="rgba(18,165,148,.08)",line_width=0)
+    fig.add_hrect(y0=LOW_TH,y1=HIGH_TH,fillcolor="rgba(245,165,36,.09)",line_width=0)
+    fig.add_hrect(y0=HIGH_TH,y1=1.0,fillcolor="rgba(220,63,74,.08)",line_width=0)
+    fig.add_trace(go.Scatter(x=sweep,y=probs,mode="lines",line=dict(color="#2C467E",width=3),
+                             name="Predicted probability",
+                             hovertemplate=f"{friendly_name(feature)}: %{{x}}<br>Probability: %{{y:.1%}}<extra></extra>"))
+    fig.add_trace(go.Scatter(x=[current_value],y=[cur_prob],mode="markers",
+                             marker=dict(size=15,color=COLORS["high"],line=dict(width=2.5,color="#FFFFFF")),
+                             name="Current value",
+                             hovertemplate=f"Current value: {current_value}<br>Probability: {cur_prob:.1%}<extra></extra>"))
+    fig.update_layout(title=f"What-if response - {_chart_label(feature)}",
+                      xaxis_title=_chart_label(feature),yaxis_title="Dropout probability",
+                      xaxis=dict(automargin=True),yaxis=dict(range=[0,1],tickformat=".0%",automargin=True),
+                      legend=dict(orientation="h",x=0.5,xanchor="center",y=-0.20,yanchor="top",font=dict(size=10)))
     return fig
-
 
 def plot_capacity_curve(probs_sorted):
-    n = len(probs_sorted)
-    k = np.arange(1, n + 1)
-    cumulative_captured = np.cumsum(probs_sorted)
-    total_risk = cumulative_captured[-1] if len(cumulative_captured) else 0.0
-    y = cumulative_captured / total_risk if total_risk > 0 else np.zeros_like(k, dtype=float)
-    cap = min(CAPACITY_LIMIT, n)
-    y_cap = y[cap - 1] if cap > 0 else 0.0
-    random_at_cap = cap / n if n > 0 else 0.0
-
-    fig = _plot_base(height=455, margin=dict(l=62, r=26, t=74, b=64))
-    fig.add_trace(go.Scatter(x=[0, n], y=[0, 1], mode="lines", line=dict(color="#B6C0CF", width=2, dash="dash"), name="Random baseline", hoverinfo="skip"))
-    fig.add_trace(go.Scatter(x=k, y=y, mode="lines", line=dict(color="#2C467E", width=3), name="Model-ranked", hovertemplate="Intervened: %{x}<br>Risk captured: %{y:.1%}<extra></extra>"))
-    fig.add_vline(x=cap, line=dict(color="#DC4A59", width=2, dash="dot"))
-    if cap > 0:
-        fig.add_trace(go.Scatter(
-            x=[cap], y=[y_cap], mode="markers", marker=dict(size=13, color="#DC4A59", line=dict(width=2, color="#FFFFFF")),
-            name="At capacity", hovertemplate=f"Top {cap} students<br>Risk captured: {y_cap:.1%}<extra></extra>",
-        ))
-        fig.add_trace(go.Scatter(
-            x=[cap], y=[random_at_cap], mode="markers", marker=dict(size=11, color="#7C8798", line=dict(width=2, color="#FFFFFF")),
-            name="Random at capacity", hovertemplate=f"Random selection at {cap}<br>Risk captured: {random_at_cap:.1%}<extra></extra>",
-        ))
-    fig.update_layout(
-        title="Capacity allocation curve",
-        xaxis_title="Students intervened (ranked by predicted risk)",
-        yaxis_title="Fraction of total predicted risk captured",
-        yaxis=dict(range=[0, 1.05], tickformat=".0%"),
-        legend=dict(orientation="h", x=0, y=1.035, yanchor="bottom", font=dict(size=10)),
-    )
+    n=len(probs_sorted); k=np.arange(1,n+1); cumulative_captured=np.cumsum(probs_sorted)
+    total_risk=cumulative_captured[-1] if len(cumulative_captured) else 0.0
+    y=cumulative_captured/total_risk if total_risk>0 else np.zeros_like(k,dtype=float)
+    cap=min(CAPACITY_LIMIT,n); y_cap=y[cap-1] if cap>0 else 0.0; random_at_cap=cap/n if n>0 else 0.0
+    fig=_plot_base(height=465,margin=dict(l=66,r=28,t=72,b=88))
+    fig.add_trace(go.Scatter(x=[0,n],y=[0,1],mode="lines",line=dict(color="#B6C0CF",width=2,dash="dash"),
+                             name="Random baseline",hoverinfo="skip"))
+    fig.add_trace(go.Scatter(x=k,y=y,mode="lines",line=dict(color="#2C467E",width=3),name="Model-ranked",
+                             hovertemplate="Intervened: %{x}<br>Risk captured: %{y:.1%}<extra></extra>"))
+    fig.add_vline(x=cap,line=dict(color=COLORS["high"],width=2,dash="dot"))
+    if cap>0:
+        fig.add_trace(go.Scatter(x=[cap],y=[y_cap],mode="markers",
+                                 marker=dict(size=13,color=COLORS["high"],line=dict(width=2,color="#FFFFFF")),
+                                 name="At capacity",hovertemplate=f"Top {cap} students<br>Risk captured: {y_cap:.1%}<extra></extra>"))
+        fig.add_trace(go.Scatter(x=[cap],y=[random_at_cap],mode="markers",
+                                 marker=dict(size=11,color="#7C8798",line=dict(width=2,color="#FFFFFF")),
+                                 name="Random at capacity",hovertemplate=f"Random selection at {cap}<br>Risk captured: {random_at_cap:.1%}<extra></extra>"))
+    fig.update_layout(title="Capacity allocation curve",
+                      xaxis_title="Students intervened (ranked by predicted risk)",
+                      yaxis_title="Fraction of total predicted risk captured",
+                      yaxis=dict(range=[0,1.05],tickformat=".0%"),
+                      legend=dict(orientation="h",x=0.5,xanchor="center",y=-0.18,yanchor="top",font=dict(size=10)))
     return fig
-
 
 def plot_batch_band_distribution(bands):
     counts = pd.Series(bands).value_counts().reindex(["Low Risk", "Medium Risk", "High Risk"], fill_value=0)
@@ -1099,449 +1134,464 @@ def _fig_to_png_bytes(fig, width=700, height=400):
 
 
 def _styles():
-    styles = getSampleStyleSheet()
+    styles=getSampleStyleSheet()
     return {
-        "cover_title": ParagraphStyle(
-            "CoverTitle", parent=styles["Title"], textColor=colors.HexColor("#12213F"),
-            fontSize=26, leading=30, spaceAfter=5, fontName="Helvetica-Bold",
-        ),
-        "subtitle": ParagraphStyle(
-            "SubTitle", parent=styles["Heading2"], textColor=colors.HexColor("#4767E8"),
-            fontSize=11.5, leading=15, spaceAfter=4, fontName="Helvetica-Bold",
-        ),
-        "h1": ParagraphStyle(
-            "H1", parent=styles["Heading1"], textColor=colors.HexColor("#12213F"),
-            fontSize=16, leading=19, spaceBefore=7, spaceAfter=8, fontName="Helvetica-Bold",
-        ),
-        "h2": ParagraphStyle(
-            "H2", parent=styles["Heading2"], textColor=colors.HexColor("#203455"),
-            fontSize=11.5, leading=14, spaceBefore=7, spaceAfter=5, fontName="Helvetica-Bold",
-        ),
-        "body": ParagraphStyle(
-            "Body", parent=styles["BodyText"], fontSize=9.3, leading=13, textColor=colors.HexColor("#53647D"),
-        ),
-        "body_dark": ParagraphStyle(
-            "BodyDark", parent=styles["BodyText"], fontSize=9.3, leading=13, textColor=colors.HexColor("#203455"),
-        ),
-        "small": ParagraphStyle(
-            "Small", parent=styles["BodyText"], fontSize=7.8, leading=10, textColor=colors.HexColor("#7C8798"),
-        ),
-        "table": ParagraphStyle(
-            "Table", parent=styles["BodyText"], fontSize=7.8, leading=9.6, textColor=colors.HexColor("#30425F"),
-        ),
-        "table_header": ParagraphStyle(
-            "TableHeader", parent=styles["BodyText"], fontSize=7.7, leading=9.2,
-            textColor=colors.white, fontName="Helvetica-Bold",
-        ),
-        "kpi_label": ParagraphStyle(
-            "KpiLabel", parent=styles["BodyText"], fontSize=7.1, leading=8.4,
-            textColor=colors.HexColor("#7B8799"), fontName="Helvetica-Bold",
-        ),
-        "kpi_value": ParagraphStyle(
-            "KpiValue", parent=styles["BodyText"], fontSize=17, leading=19,
-            textColor=colors.HexColor("#12213F"), fontName="Helvetica-Bold",
-        ),
-        "kpi_sub": ParagraphStyle(
-            "KpiSub", parent=styles["BodyText"], fontSize=7.5, leading=9.2,
-            textColor=colors.HexColor("#7B8799"),
-        ),
+        "cover_title": ParagraphStyle("CoverTitle",parent=styles["Title"],textColor=colors.HexColor(COLORS["ink"]),fontSize=25,leading=29,spaceAfter=5,fontName="Helvetica-Bold"),
+        "subtitle": ParagraphStyle("SubTitle",parent=styles["Heading2"],textColor=colors.HexColor(COLORS["brand"]),fontSize=11.5,leading=15,spaceAfter=4,fontName="Helvetica-Bold"),
+        "h1": ParagraphStyle("H1",parent=styles["Heading1"],textColor=colors.HexColor(COLORS["ink"]),fontSize=16,leading=19,spaceBefore=7,spaceAfter=8,fontName="Helvetica-Bold"),
+        "h2": ParagraphStyle("H2",parent=styles["Heading2"],textColor=colors.HexColor(COLORS["navy"]),fontSize=11.5,leading=14,spaceBefore=7,spaceAfter=5,fontName="Helvetica-Bold"),
+        "body": ParagraphStyle("Body",parent=styles["BodyText"],fontSize=9.15,leading=12.9,textColor=colors.HexColor("#53647D"),spaceAfter=2),
+        "body_dark": ParagraphStyle("BodyDark",parent=styles["BodyText"],fontSize=9.15,leading=12.9,textColor=colors.HexColor("#203455"),spaceAfter=2),
+        "small": ParagraphStyle("Small",parent=styles["BodyText"],fontSize=7.6,leading=9.6,textColor=colors.HexColor("#7C8798")),
+        "table": ParagraphStyle("Table",parent=styles["BodyText"],fontSize=7.5,leading=9.1,textColor=colors.HexColor("#30425F")),
+        "table_header": ParagraphStyle("TableHeader",parent=styles["BodyText"],fontSize=7.4,leading=8.9,textColor=colors.white,fontName="Helvetica-Bold"),
+        "kpi_label": ParagraphStyle("KpiLabel",parent=styles["BodyText"],fontSize=6.9,leading=8.2,textColor=colors.HexColor("#738097"),fontName="Helvetica-Bold"),
+        "kpi_value": ParagraphStyle("KpiValue",parent=styles["BodyText"],fontSize=16.5,leading=18.5,textColor=colors.HexColor(COLORS["ink"]),fontName="Helvetica-Bold"),
+        "kpi_sub": ParagraphStyle("KpiSub",parent=styles["BodyText"],fontSize=7.2,leading=8.9,textColor=colors.HexColor("#7C8798")),
+        "caption": ParagraphStyle("Caption",parent=styles["BodyText"],fontSize=7.5,leading=9.5,textColor=colors.HexColor("#7C8798"),spaceBefore=3,spaceAfter=7),
     }
 
 
 def _band_color(band):
     return {
-        "Low Risk": colors.HexColor("#12A594"),
-        "Medium Risk": colors.HexColor("#F5A524"),
-        "High Risk": colors.HexColor("#DC4A59"),
-    }.get(band, colors.HexColor("#4767E8"))
+        "Low Risk": colors.HexColor(COLORS["low"]),
+        "Medium Risk": colors.HexColor(COLORS["medium"]),
+        "High Risk": colors.HexColor(COLORS["high"]),
+    }.get(band, colors.HexColor(COLORS["brand"]))
 
 
-def _p(text, style, escape_html=True):
+def _ascii_safe(text):
+    replacements={
+        "\u2265":">=","\u2264":"<=","\u2192":"->","\u2190":"<-","\u2013":"-","\u2014":"-",
+        "\u00b7":" - ","\u2026":"...","\u0394":"Delta","\u2018":"'","\u2019":"'","\u201c":'"',
+        "\u201d":'"',"\u00a0":" ",
+    }
+    txt="" if text is None else str(text)
+    for a,b in replacements.items(): txt=txt.replace(a,b)
+    return txt.encode("ascii","replace").decode("ascii")
+
+
+def _p(text,style,escape_html=True):
     from xml.sax.saxutils import escape
-    txt = "" if text is None else str(text)
-    if escape_html:
-        txt = escape(txt)
-    return Paragraph(txt.replace("\n", "<br/>"), style)
+    txt=_ascii_safe(text)
+    if escape_html: txt=escape(txt)
+    return Paragraph(txt.replace("\n","<br/>"),style)
 
 
 def _std_table(data, col_widths=None, header_bg="#17305F", row_alt="#F7F9FC", font_size=7.8):
-    S = _styles()
-    wrapped = []
-    for r, row in enumerate(data):
-        wrapped.append([_p(cell, S["table_header"] if r == 0 else S["table"]) for cell in row])
-    t = Table(wrapped, colWidths=col_widths, repeatRows=1, hAlign="LEFT")
+    S=_styles(); wrapped=[]
+    for r,row in enumerate(data):
+        row_style=S["table_header"] if r==0 else S["table"]
+        wrapped.append([cell if isinstance(cell,Paragraph) else _p(cell,row_style) for cell in row])
+    t=Table(wrapped,colWidths=col_widths,repeatRows=1,hAlign="LEFT",splitByRow=1)
     t.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor(header_bg)),
-        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor(row_alt)]),
-        ("GRID", (0, 0), (-1, -1), 0.35, colors.HexColor("#D9E0EA")),
-        ("LEFTPADDING", (0, 0), (-1, -1), 5),
-        ("RIGHTPADDING", (0, 0), (-1, -1), 5),
-        ("TOPPADDING", (0, 0), (-1, -1), 4),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+        ("BACKGROUND",(0,0),(-1,0),colors.HexColor(header_bg)),
+        ("VALIGN",(0,0),(-1,-1),"MIDDLE"),
+        ("ROWBACKGROUNDS",(0,1),(-1,-1),[colors.white,colors.HexColor(row_alt)]),
+        ("GRID",(0,0),(-1,-1),0.35,colors.HexColor("#D9E0EA")),
+        ("LEFTPADDING",(0,0),(-1,-1),5),("RIGHTPADDING",(0,0),(-1,-1),5),
+        ("TOPPADDING",(0,0),(-1,-1),4),("BOTTOMPADDING",(0,0),(-1,-1),4),
     ]))
     return t
 
 
 def _callout(title, body, bg="#F5F8FF", border="#DCE6FF", title_color="#2F53D5"):
-    S = _styles()
-    inner = Table([[
-        _p(title, ParagraphStyle("CalloutTitle", parent=S["body_dark"], fontSize=8.2, leading=10, textColor=colors.HexColor(title_color), fontName="Helvetica-Bold")),
-    ], [
-        _p(body, S["body"]),
-    ]], colWidths=[16.3 * cm])
+    S=_styles()
+    inner=Table([[
+        _p(title,ParagraphStyle("CalloutTitle",parent=S["body_dark"],fontSize=8.2,leading=10,textColor=colors.HexColor(title_color),fontName="Helvetica-Bold"))
+    ],[
+        _p(body,S["body"])
+    ]],colWidths=[16.3*cm])
     inner.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor(bg)),
-        ("BOX", (0, 0), (-1, -1), .55, colors.HexColor(border)),
-        ("LEFTPADDING", (0, 0), (-1, -1), 8), ("RIGHTPADDING", (0, 0), (-1, -1), 8),
-        ("TOPPADDING", (0, 0), (-1, -1), 6), ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+        ("BACKGROUND",(0,0),(-1,-1),colors.HexColor(bg)),
+        ("BOX",(0,0),(-1,-1),.55,colors.HexColor(border)),
+        ("LEFTPADDING",(0,0),(-1,-1),8),("RIGHTPADDING",(0,0),(-1,-1),8),
+        ("TOPPADDING",(0,0),(-1,-1),6),("BOTTOMPADDING",(0,0),(-1,-1),6),
     ]))
     return inner
 
 
 def _hr():
-    return HRFlowable(width="100%", thickness=.65, color=colors.HexColor("#D9E0EA"), spaceBefore=5, spaceAfter=8)
+    return HRFlowable(width="100%",thickness=.65,color=colors.HexColor("#D9E0EA"),spaceBefore=5,spaceAfter=8)
 
 
-def _pdf_page(canvas, doc):
+def _rl_img(png_bytes,max_width_cm=16.3,max_height_cm=None,hAlign="CENTER"):
+    if not png_bytes: return None
+    reader=ImageReader(io.BytesIO(png_bytes)); px_w,px_h=reader.getSize()
+    max_w=max_width_cm*cm
+    scale=max_w/float(px_w)
+    if max_height_cm is not None: scale=min(scale,(max_height_cm*cm)/float(px_h))
+    return RLImage(io.BytesIO(png_bytes),width=px_w*scale,height=px_h*scale,hAlign=hAlign)
+
+
+class _NumberedCanvas(pdf_canvas.Canvas):
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args,**kwargs); self._saved_page_states=[]
+    def showPage(self):
+        self._saved_page_states.append(dict(self.__dict__)); self._startPage()
+    def save(self):
+        total_pages=len(self._saved_page_states)
+        for state in self._saved_page_states:
+            self.__dict__.update(state)
+            self.saveState()
+            w,_=A4
+            self.setFillColor(colors.HexColor("#7C8798"))
+            self.setFont("Helvetica",7.2)
+            self.drawRightString(w-1.75*cm,.78*cm,f"Page {self._pageNumber} of {total_pages}")
+            self.restoreState()
+            pdf_canvas.Canvas.showPage(self)
+        pdf_canvas.Canvas.save(self)
+
+
+def _draw_pdf_brand_mark(canvas,x,y,size=18):
     canvas.saveState()
-    w, h = A4
-    canvas.setStrokeColor(colors.HexColor("#E4EAF2"))
-    canvas.setLineWidth(.5)
-    canvas.line(1.75 * cm, 1.25 * cm, w - 1.75 * cm, 1.25 * cm)
-    canvas.setFont("Helvetica", 7.5)
-    canvas.setFillColor(colors.HexColor("#8A95A6"))
-    canvas.drawString(1.75 * cm, .78 * cm, "Capacity-Aware Decision Support System")
-    canvas.drawRightString(w - 1.75 * cm, .78 * cm, f"Page {doc.page}")
+    canvas.setFillColor(colors.HexColor(COLORS["brand"]))
+    canvas.roundRect(x,y,size,size,4,fill=1,stroke=0)
+    canvas.setStrokeColor(colors.white); canvas.setLineWidth(1.15)
+    canvas.line(x+4,y+11,x+9,y+7); canvas.line(x+9,y+7,x+14,y+12)
+    canvas.line(x+4,y+13,x+9,y+17); canvas.line(x+9,y+17,x+14,y+12)
     canvas.restoreState()
 
 
-def _profile_relative(v, med):
+def _pdf_page(canvas,doc):
+    canvas.saveState()
+    w,h=A4; report_id=getattr(doc,"report_id","")
+    canvas.setStrokeColor(colors.HexColor("#E4EAF2")); canvas.setLineWidth(.5)
+    canvas.line(1.75*cm,1.25*cm,w-1.75*cm,1.25*cm)
+    _draw_pdf_brand_mark(canvas,1.75*cm,h-1.18*cm,size=13)
+    canvas.setFont("Helvetica-Bold",7.7); canvas.setFillColor(colors.HexColor(COLORS["navy"]))
+    canvas.drawString(3.25*cm,h-1.10*cm,PRODUCT_NAME[:78])
+    canvas.setFont("Helvetica",7.2); canvas.setFillColor(colors.HexColor("#7C8798"))
+    canvas.drawRightString(w-1.75*cm,h-1.10*cm,f"{INSTITUTION_NAME} | {report_id}")
+    canvas.drawString(1.75*cm,.78*cm,"Human-supervised decision support")
+    canvas.restoreState()
+
+
+def _profile_relative(v,med):
     try:
-        vf, mf = float(v), float(med)
-        if mf == 0:
-            return "n/a"
-        ratio = vf / mf
-        if ratio >= 1.5: return "Well above median"
-        if ratio >= 1.1: return "Above median"
-        if ratio >= .9: return "Near median"
-        if ratio >= .5: return "Below median"
+        vf,mf=float(v),float(med)
+        if mf==0: return "n/a"
+        ratio=vf/mf
+        if ratio>=1.5: return "Well above median"
+        if ratio>=1.1: return "Above median"
+        if ratio>=.9: return "Near median"
+        if ratio>=.5: return "Below median"
         return "Well below median"
-    except (TypeError, ValueError):
-        return "n/a"
+    except (TypeError,ValueError): return "n/a"
 
 
+def _pdf_banner(title,subtitle,report_id,stamp):
+    S=_styles()
+    banner=Table([[
+        _p(INSTITUTION_NAME,ParagraphStyle("BannerInst",parent=S["small"],textColor=colors.white,fontSize=7.3,leading=9.2,fontName="Helvetica-Bold")),
+        _p("REPORT",ParagraphStyle("BannerTag",parent=S["small"],textColor=colors.white,fontSize=7.2,leading=8.8,fontName="Helvetica-Bold",alignment=2)),
+    ],[
+        _p(title,ParagraphStyle("BannerTitle",parent=S["body"],textColor=colors.white,fontSize=19.5,leading=22,fontName="Helvetica-Bold")),
+        _p(f"Report ID {report_id}<br/>{stamp}",ParagraphStyle("BannerMeta",parent=S["small"],textColor=colors.white,fontSize=7.1,leading=8.8,alignment=2)),
+    ],[
+        _p(subtitle,ParagraphStyle("BannerSub",parent=S["body"],textColor=colors.HexColor("#DDE7FF"),fontSize=8.7,leading=11.2)),
+        _p(TEXT["decision_support"],ParagraphStyle("BannerNotice",parent=S["small"],textColor=colors.HexColor("#DDE7FF"),fontSize=7.1,leading=8.8,alignment=2)),
+    ]],colWidths=[11.7*cm,4.6*cm])
+    banner.setStyle(TableStyle([
+        ("BACKGROUND",(0,0),(-1,-1),colors.HexColor(COLORS["navy"])),
+        ("VALIGN",(0,0),(-1,-1),"TOP"),
+        ("LEFTPADDING",(0,0),(-1,-1),10),("RIGHTPADDING",(0,0),(-1,-1),10),
+        ("TOPPADDING",(0,0),(-1,-1),6),("BOTTOMPADDING",(0,0),(-1,-1),6),
+    ]))
+    return banner
+
+
+# ==========================================================
+# PDF REPORTS
+# Presentation/print layer only; assessment math is unchanged.
+# ==========================================================
 def build_pdf_report(
     student_inputs, p_dropout, band, action, shap_vals, feature_cols, medians, model,
     counterfactual_feature=None, counterfactual_curve_png=None, radar_png=None, top_k=10,
 ):
-    buffer = io.BytesIO()
-    doc = SimpleDocTemplate(
-        buffer, pagesize=A4, leftMargin=1.75 * cm, rightMargin=1.75 * cm,
-        topMargin=1.45 * cm, bottomMargin=1.6 * cm,
-        title="Student Dropout Risk Report", author="Capacity-Aware Decision Support System",
+    buffer=io.BytesIO()
+    report_id=datetime.now().strftime("%Y%m%d%H%M%S")
+    stamp=datetime.now().strftime("%Y-%m-%d %H:%M")
+    doc=SimpleDocTemplate(
+        buffer,pagesize=A4,leftMargin=1.75*cm,rightMargin=1.75*cm,
+        topMargin=1.75*cm,bottomMargin=1.55*cm,
+        title="Student Dropout Risk Report",author=PRODUCT_NAME,
+        subject="Interpretable student-retention decision support report",
     )
-    S = _styles()
-    story = []
+    doc.report_id=report_id
+    S=_styles(); story=[]
+    story.append(_pdf_banner("Student Dropout Risk Report","Capacity-Aware Decision Support System",report_id,stamp))
+    story.append(Spacer(1,8))
+    story.append(_p(f"Model: {MODEL_NAME}  |  Version: {MODEL_VERSION}",S["small"]))
+    story.append(Spacer(1,7))
 
-    # COVER / EXECUTIVE SNAPSHOT
-    story.append(_p("Student Dropout Risk Report", S["cover_title"]))
-    story.append(_p("Capacity-Aware Decision Support System", S["subtitle"]))
-    story.append(_p(
-        f"Model: {MODEL_NAME}  |  Prototype version: {MODEL_VERSION}  |  Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}",
-        S["small"],
-    ))
-    story.append(Spacer(1, 8))
-
-    kpi_data = [[
-        _p("DROPOUT PROBABILITY", S["kpi_label"]),
-        _p("RISK BAND", S["kpi_label"]),
-        _p("RECOMMENDED ACTION", S["kpi_label"]),
-    ], [
-        _p(f"{p_dropout:.1%}", ParagraphStyle("RiskKPI", parent=S["kpi_value"], textColor=_band_color(band))),
-        _p(band, ParagraphStyle("BandKPI", parent=S["kpi_value"], fontSize=14, leading=17, textColor=_band_color(band))),
-        _p(action, ParagraphStyle("ActionKPI", parent=S["kpi_value"], fontSize=11.2, leading=13.5)),
-    ], [
-        _p(f"Thresholds: Low < {LOW_TH:.0%}; Medium < {HIGH_TH:.0%}; High ≥ {HIGH_TH:.0%}", S["kpi_sub"]),
-        _p("Operational risk stratification", S["kpi_sub"]),
-        _p("Capacity-aware intervention tier", S["kpi_sub"]),
-    ]]
-    kt = Table(kpi_data, colWidths=[5.15*cm, 5.15*cm, 6.05*cm], hAlign="LEFT")
+    kpi_data=[
+        [_p("DROPOUT PROBABILITY",S["kpi_label"]),_p("RISK BAND",S["kpi_label"]),_p("RECOMMENDED ACTION",S["kpi_label"])],
+        [
+            _p(f"{p_dropout:.1%}",ParagraphStyle("RiskKPI",parent=S["kpi_value"],textColor=_band_color(band))),
+            _p(band,ParagraphStyle("BandKPI",parent=S["kpi_value"],fontSize=13.5,leading=16,textColor=_band_color(band))),
+            _p(action,ParagraphStyle("ActionKPI",parent=S["kpi_value"],fontSize=10.6,leading=12.8)),
+        ],
+        [
+            _p(f"Thresholds: Low < {LOW_TH:.0%}; Medium < {HIGH_TH:.0%}; High >= {HIGH_TH:.0%}",S["kpi_sub"]),
+            _p("Operational risk stratification",S["kpi_sub"]),
+            _p("Capacity-aware intervention tier",S["kpi_sub"]),
+        ],
+    ]
+    kt=Table(kpi_data,colWidths=[5.15*cm,5.15*cm,6.05*cm],hAlign="LEFT")
     kt.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#FFFFFF")),
-        ("BOX", (0, 0), (-1, -1), .6, colors.HexColor("#DFE6F0")),
-        ("INNERGRID", (0, 0), (-1, -1), .35, colors.HexColor("#EDF1F6")),
-        ("VALIGN", (0, 0), (-1, -1), "TOP"),
-        ("LEFTPADDING", (0, 0), (-1, -1), 8), ("RIGHTPADDING", (0, 0), (-1, -1), 8),
-        ("TOPPADDING", (0, 0), (-1, -1), 6), ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+        ("BACKGROUND",(0,0),(-1,-1),colors.white),("BOX",(0,0),(-1,-1),.6,colors.HexColor("#DFE6F0")),
+        ("INNERGRID",(0,0),(-1,-1),.35,colors.HexColor("#EDF1F6")),("VALIGN",(0,0),(-1,-1),"TOP"),
+        ("LEFTPADDING",(0,0),(-1,-1),8),("RIGHTPADDING",(0,0),(-1,-1),8),
+        ("TOPPADDING",(0,0),(-1,-1),6),("BOTTOMPADDING",(0,0),(-1,-1),6),
     ]))
     story.append(kt)
-    story.append(Spacer(1, 10))
+    story.append(Spacer(1,9))
     story.append(_callout(
         "Executive interpretation",
         "This report summarizes the model assessment, the strongest local feature attributions, the student's profile relative to the training cohort, a single-variable what-if analysis, and the capacity-aware intervention tier. Predictions are probabilistic and are intended for human-supervised decision support.",
     ))
 
-    story.append(Paragraph("1. Probability and Band Placement", S["h1"]))
-    gauge_png = _fig_to_png_bytes(plot_gauge(p_dropout, band), width=700, height=320)
-    band_png = _fig_to_png_bytes(plot_threshold_explorer(p_dropout), width=900, height=280)
-    chart_cells = []
-    if gauge_png:
-        chart_cells.append(RLImage(io.BytesIO(gauge_png), width=8.0*cm, height=3.65*cm))
-    else:
-        chart_cells.append(_p(f"Probability: {p_dropout:.1%}", S["body"]))
-    if band_png:
-        chart_cells.append(RLImage(io.BytesIO(band_png), width=8.0*cm, height=3.65*cm))
-    chart_table = Table([chart_cells], colWidths=[8.15*cm, 8.15*cm], hAlign="LEFT")
+    story.append(Paragraph("1. Probability and Band Placement",S["h1"]))
+    story.append(_p(
+        "The gauge and band placement view show the same model output from complementary perspectives. The risk thresholds remain fixed at the values used by the current DSS.",
+        S["body"],
+    ))
+    gauge_png=_fig_to_png_bytes(plot_gauge(p_dropout,band),width=820,height=390)
+    band_png=_fig_to_png_bytes(plot_threshold_explorer(p_dropout),width=980,height=300)
+    cells=[]
+    for png,fallback in [(gauge_png,f"Probability: {p_dropout:.1%}"),(band_png,"Risk-band placement chart unavailable.")]:
+        img=_rl_img(png,max_width_cm=7.9,max_height_cm=4.2) if png else None
+        cells.append(img if img else _p(fallback,S["body"]))
+    chart_table=Table([cells],colWidths=[8.25*cm,8.25*cm],hAlign="LEFT")
     chart_table.setStyle(TableStyle([
-        ("VALIGN", (0,0), (-1,-1), "MIDDLE"), ("LEFTPADDING", (0,0), (-1,-1), 0),
-        ("RIGHTPADDING", (0,0), (-1,-1), 5), ("TOPPADDING", (0,0), (-1,-1), 0), ("BOTTOMPADDING", (0,0), (-1,-1), 0),
+        ("VALIGN",(0,0),(-1,-1),"MIDDLE"),("LEFTPADDING",(0,0),(-1,-1),0),
+        ("RIGHTPADDING",(0,0),(-1,-1),4),("TOPPADDING",(0,0),(-1,-1),0),("BOTTOMPADDING",(0,0),(-1,-1),0),
     ]))
     story.append(chart_table)
+    story.append(_p(f"Risk band rule: Low < {LOW_TH:.0%}; Medium < {HIGH_TH:.0%}; High >= {HIGH_TH:.0%}.",S["caption"]))
 
-    # PROFILE
-    story.append(Paragraph("2. Submitted Student Profile", S["h1"]))
+    story.append(Paragraph("2. Submitted Student Profile",S["h1"]))
     story.append(_p(
         "The visible indicators entered in the assessment are shown below. Model features that were not explicitly entered remain imputed from the training-cohort medians, consistent with the current workflow.",
         S["body"],
     ))
-    profile_rows = [["Indicator", "Submitted", "Cohort median", "Relative position"]]
-    for k, v in student_inputs.items():
-        med = medians.get(k, np.nan)
-        med_txt = "n/a" if pd.isna(med) else f"{float(med):.2f}"
-        profile_rows.append([friendly_name(k), str(v), med_txt, _profile_relative(v, med)])
-    story.append(Spacer(1, 4))
-    story.append(_std_table(profile_rows, col_widths=[6.1*cm, 3.0*cm, 3.1*cm, 4.1*cm]))
-
+    profile_rows=[["Indicator","Submitted","Cohort median","Relative position"]]
+    for k,v in student_inputs.items():
+        med=medians.get(k,np.nan)
+        profile_rows.append([friendly_name(k),str(v),"n/a" if pd.isna(med) else f"{float(med):.2f}",_profile_relative(v,med)])
+    story.append(_std_table(profile_rows,col_widths=[6.1*cm,3.0*cm,3.1*cm,4.1*cm]))
     if radar_png:
-        story.append(Paragraph("Profile context", S["h2"]))
-        story.append(RLImage(io.BytesIO(radar_png), width=12.6*cm, height=7.25*cm, hAlign="CENTER"))
+        story.append(Paragraph("Profile context",S["h2"]))
+        img=_rl_img(radar_png,max_width_cm=12.2,max_height_cm=9.0)
+        if img: story.append(img)
+        story.append(_p("Normalized comparison against the cohort median for selected indicators.",S["caption"]))
 
     story.append(PageBreak())
-
-    # EXPLANATION
-    story.append(Paragraph("3. Why the Model Reached This Assessment", S["h1"]))
+    story.append(Paragraph("3. Why the Model Reached This Assessment",S["h1"]))
     story.append(_p(
         "SHAP (SHapley Additive exPlanations) values quantify the marginal contribution of each feature to the model output. Positive values push the prediction toward dropout; negative values push it away. SHAP values are reported in log-odds space and should be read for direction and relative magnitude rather than as direct probability percentages.",
         S["body"],
     ))
-    shap_png = _fig_to_png_bytes(plot_shap_waterfall(feature_cols, shap_vals, top_n=min(top_k, 8)), width=930, height=460)
+    shap_png=_fig_to_png_bytes(plot_shap_waterfall(feature_cols,shap_vals,top_n=min(top_k,8)),width=1000,height=500)
     if shap_png:
-        story.append(RLImage(io.BytesIO(shap_png), width=16.3*cm, height=8.05*cm))
-    story.append(Spacer(1, 4))
-    idx = np.argsort(np.abs(shap_vals))[-min(top_k, 8):][::-1]
-    shap_rows = [["Rank", "Feature", "SHAP impact", "Direction", "Submitted"]]
-    for rank, i in enumerate(idx, 1):
-        v = float(shap_vals[i]); feat = feature_cols[i]
-        shap_rows.append([str(rank), friendly_name(feat), f"{v:+.3f}", "Increases risk" if v > 0 else "Reduces risk", str(student_inputs.get(feat, "(imputed)"))])
-    story.append(_std_table(shap_rows, col_widths=[1.0*cm, 6.2*cm, 2.5*cm, 3.0*cm, 3.6*cm]))
+        img=_rl_img(shap_png,max_width_cm=16.3,max_height_cm=8.2)
+        if img: story.append(img)
+        story.append(_p("Top local feature attributions. Red indicates a risk-increasing contribution; teal indicates a risk-reducing contribution.",S["caption"]))
+    else:
+        story.append(_callout("Chart rendering fallback","The SHAP chart could not be rendered in this environment. The structured attribution table below remains available."))
+    idx=np.argsort(np.abs(shap_vals))[-min(top_k,8):][::-1]
+    shap_rows=[["Rank","Feature","SHAP impact","Direction","Submitted"]]
+    for rank,i in enumerate(idx,1):
+        v=float(shap_vals[i]); feat=feature_cols[i]
+        shap_rows.append([str(rank),friendly_name(feat),f"{v:+.3f}","Increases risk" if v>0 else "Reduces risk",str(student_inputs.get(feat,"(imputed)"))])
+    story.append(_std_table(shap_rows,col_widths=[1.0*cm,6.2*cm,2.5*cm,3.0*cm,3.6*cm]))
 
-    story.append(Paragraph("4. Narrative Interpretation", S["h1"]))
-    top_pos = sorted([(feature_cols[i], float(shap_vals[i])) for i in range(len(feature_cols)) if shap_vals[i] > 0], key=lambda x: -x[1])[:3]
-    top_neg = sorted([(feature_cols[i], float(shap_vals[i])) for i in range(len(feature_cols)) if shap_vals[i] < 0], key=lambda x: x[1])[:3]
-    narrative = f"The model estimates a dropout probability of <b>{p_dropout:.1%}</b>, corresponding to the <b>{band}</b> tier. "
-    if top_pos:
-        narrative += "The largest risk-increasing attributions are " + ", ".join(f"{friendly_name(f)} ({v:+.2f})" for f, v in top_pos) + ". "
-    if top_neg:
-        narrative += "The largest risk-reducing attributions are " + ", ".join(f"{friendly_name(f)} ({v:+.2f})" for f, v in top_neg) + "."
-    story.append(_p(narrative, S["body"] , escape_html=False))
-
-    donut_png = _fig_to_png_bytes(plot_contribution_donut(shap_vals), width=680, height=390)
-    if donut_png:
-        story.append(Spacer(1, 6))
-        story.append(RLImage(io.BytesIO(donut_png), width=10.8*cm, height=5.9*cm, hAlign="CENTER"))
-
-    # ACTION + WHAT IF
-    story.append(PageBreak())
-    story.append(Paragraph("5. Action Plan and What-If Analysis", S["h1"]))
+    story.append(Paragraph("4. Highest-Impact Indicators",S["h1"]))
+    top_pos=sorted([(feature_cols[i],float(shap_vals[i])) for i in range(len(feature_cols)) if shap_vals[i]>0],key=lambda x:-x[1])[:3]
+    top_neg=sorted([(feature_cols[i],float(shap_vals[i])) for i in range(len(feature_cols)) if shap_vals[i]<0],key=lambda x:x[1])[:3]
+    narrative=f"The model estimates a dropout probability of <b>{p_dropout:.1%}</b>, corresponding to the <b>{band}</b> tier. "
+    if top_pos: narrative+="The largest risk-increasing attributions are "+", ".join(f"{friendly_name(f)} ({v:+.2f})" for f,v in top_pos)+". "
+    if top_neg: narrative+="The largest risk-reducing attributions are "+", ".join(f"{friendly_name(f)} ({v:+.2f})" for f,v in top_neg)+"."
+    story.append(_p(narrative,S["body"],escape_html=False))
     story.append(_callout(
-        "Primary action",
-        f"{action}. {get_intervention_detail(band)}",
-        bg="#F8FAFE", border="#DCE5F2", title_color="#2D477E",
+        "Interpretation boundary",
+        "These are model attributions rather than causal effects. They identify the strongest local signals used by the current model for this assessment; they should not be interpreted as guaranteed intervention levers.",
+        bg="#F8FAFE",border="#DCE5F2",title_color="#2D477E",
     ))
-    story.append(Spacer(1, 6))
+    donut_png=_fig_to_png_bytes(plot_contribution_donut(shap_vals),width=760,height=420)
+    if donut_png:
+        img=_rl_img(donut_png,max_width_cm=10.3,max_height_cm=6.4)
+        if img: story.append(img)
+
+    story.append(PageBreak())
+    story.append(Paragraph("5. Action Plan and What-If Analysis",S["h1"]))
+    story.append(_callout("Primary action",f"{action}. {get_intervention_detail(band)}",bg="#F8FAFE",border="#DCE5F2",title_color="#2D477E"))
+    story.append(Spacer(1,6))
     story.append(_p(
         "The counterfactual view holds other model features constant while varying one selected indicator. It is a scenario analysis, not a causal guarantee: real-world changes may co-occur and may not produce the same result outside the model's observed data distribution.",
         S["body"],
     ))
+    if counterfactual_feature: story.append(_p(f"Scenario feature: {friendly_name(counterfactual_feature)}",S["body_dark"]))
     if counterfactual_curve_png:
-        if counterfactual_feature:
-            story.append(Paragraph(f"Scenario feature: {friendly_name(counterfactual_feature)}", S["h2"]))
-        story.append(RLImage(io.BytesIO(counterfactual_curve_png), width=16.3*cm, height=7.05*cm))
-
-    story.append(Paragraph("Operational notes", S["h2"]))
+        img=_rl_img(counterfactual_curve_png,max_width_cm=16.3,max_height_cm=8.5)
+        if img: story.append(img)
+        story.append(_p("Counterfactual response curve generated from the current model while holding the remaining model inputs constant.",S["caption"]))
+    story.append(Paragraph("Operational notes",S["h2"]))
     story.append(_std_table([
-        ["Rule", "Current prototype behavior"],
-        ["Risk thresholds", f"Low < {LOW_TH:.0%}; Medium < {HIGH_TH:.0%}; High ≥ {HIGH_TH:.0%}"],
-        ["Intensive capacity", f"C = {CAPACITY_LIMIT} university-wide slots"],
-        ["Overflow", "High-risk students beyond capacity are routed to scalable workshops and monitoring."],
-        ["Escalation", "Reassess at the next checkpoint; escalate when the predicted band increases and capacity is available."],
-    ], col_widths=[4.0*cm, 12.3*cm]))
+        ["Rule","Current prototype behavior"],
+        ["Risk thresholds",f"Low < {LOW_TH:.0%}; Medium < {HIGH_TH:.0%}; High >= {HIGH_TH:.0%}"],
+        ["Intensive capacity",f"C = {CAPACITY_LIMIT} university-wide slots"],
+        ["Overflow","High-risk students beyond capacity are routed to scalable workshops and monitoring."],
+        ["Escalation","Reassess at the next checkpoint; escalate when the predicted band increases and capacity is available."],
+    ],col_widths=[4.0*cm,12.3*cm]))
 
     story.append(PageBreak())
-    story.append(Paragraph("6. Methodology, Fairness, and Limitations", S["h1"]))
-    story.append(Paragraph("Model and data", S["h2"]))
+    story.append(Paragraph("6. Methodology, Fairness, and Limitations",S["h1"]))
+    story.append(Paragraph("Model and data",S["h2"]))
     story.append(_p(
         "XGBoost gradient-boosted classifier with 400 trees, maximum depth 4, learning rate 0.05, subsample 0.8, colsample-by-tree 0.8, and positive-class reweighting. The current reporting layer describes the training cohort as 3,630 students with 36 features; the model uses an 80/20 stratified split in the application workflow.",
         S["body"],
     ))
-    story.append(Paragraph("Validation and fairness", S["h2"]))
+    story.append(Paragraph("Validation and fairness",S["h2"]))
     story.append(_p(
         "The current report configuration cites a cross-validated AUC above 0.950 and a Brier score of 0.058. The fairness audit reports an Equal Opportunity mitigation example in which the scholarship-vs-non-scholarship TPR gap narrows from 0.022 to 0.003 through group-specific thresholding.",
         S["body"],
     ))
-    story.append(Paragraph("Limitations", S["h2"]))
+    story.append(Paragraph("Limitations",S["h2"]))
     story.append(_std_table([
-        ["Consideration", "Interpretation"],
-        ["Probabilistic output", "A prediction is an estimated probability, not a certainty about an individual student's future."],
-        ["Historical data", "The model reflects patterns in its training data and should not be interpreted as identifying causal effects."],
-        ["Counterfactuals", "Single-variable sweeps are scenario analyses; real interventions may change several variables together."],
-        ["Capacity parameter", f"C = {CAPACITY_LIMIT} is a prototype operational parameter and should be calibrated to real institutional resources."],
-        ["Human oversight", "The system is intended to support professional judgement, not to make fully automated decisions."],
-    ], col_widths=[4.0*cm, 12.3*cm]))
-
-    story.append(Spacer(1, 12))
+        ["Consideration","Interpretation"],
+        ["Probabilistic output","A prediction is an estimated probability, not a certainty about an individual student's future."],
+        ["Historical data","The model reflects patterns in its training data and should not be interpreted as identifying causal effects."],
+        ["Counterfactuals","Single-variable sweeps are scenario analyses; real interventions may change several variables together."],
+        ["Capacity parameter",f"C = {CAPACITY_LIMIT} is a prototype operational parameter and should be calibrated to real institutional resources."],
+        ["Human oversight","The system is intended to support professional judgement, not to make fully automated decisions."],
+    ],col_widths=[4.0*cm,12.3*cm]))
+    story.append(Spacer(1,10))
     story.append(_callout(
         "Decision-support notice",
         "Use this report as structured evidence for advising and follow-up. Review the underlying student context before taking action, and keep intervention decisions under appropriate human supervision.",
-        bg="#FFF9EA", border="#F4DEAC", title_color="#9A5A05",
+        bg="#FFF9EA",border="#F4DEAC",title_color="#9A5A05",
     ))
-    story.append(Spacer(1, 12))
-    story.append(_hr())
-    story.append(_p(
-        f"Generated automatically · Report ID {datetime.now().strftime('%Y%m%d%H%M%S')}", S["small"]
-    ))
-
-    doc.build(story, onFirstPage=_pdf_page, onLaterPages=_pdf_page)
-    buffer.seek(0)
-    return buffer
+    story.append(Spacer(1,10)); story.append(_hr())
+    story.append(_p(f"Generated automatically | Report ID {report_id} | {stamp} | {INSTITUTION_NAME}",S["small"]))
+    doc.build(story,onFirstPage=_pdf_page,onLaterPages=_pdf_page,canvasmaker=_NumberedCanvas)
+    buffer.seek(0); return buffer
 
 
 def build_batch_pdf_report(scored_df, summary_df, curve_png=None, dist_png=None, hist_png=None, top_n=50, model_name=MODEL_NAME):
-    buffer = io.BytesIO()
-    doc = SimpleDocTemplate(
-        buffer, pagesize=A4, leftMargin=1.75 * cm, rightMargin=1.75 * cm,
-        topMargin=1.45 * cm, bottomMargin=1.6 * cm,
-        title="Batch Cohort Risk Report", author="Capacity-Aware Decision Support System",
+    buffer=io.BytesIO()
+    report_id=datetime.now().strftime("%Y%m%d%H%M%S")
+    stamp=datetime.now().strftime("%Y-%m-%d %H:%M")
+    doc=SimpleDocTemplate(
+        buffer,pagesize=A4,leftMargin=1.75*cm,rightMargin=1.75*cm,
+        topMargin=1.75*cm,bottomMargin=1.55*cm,
+        title="Batch Cohort Risk Report",author=PRODUCT_NAME,
+        subject="Capacity-constrained cohort risk scoring report",
     )
-    S = _styles(); story = []
-    n_total = len(scored_df)
-    n_high = int((scored_df["band"] == "High Risk").sum())
-    n_med = int((scored_df["band"] == "Medium Risk").sum())
-    n_low = int((scored_df["band"] == "Low Risk").sum())
-    n_intensive = int((scored_df["action"] == "Intensive Mentoring and Counseling").sum())
-    n_overflow = int(scored_df["action"].astype(str).str.contains("capacity overflow", na=False).sum())
+    doc.report_id=report_id
+    S=_styles(); story=[]
+    n_total=len(scored_df)
+    n_high=int((scored_df["band"]=="High Risk").sum())
+    n_med=int((scored_df["band"]=="Medium Risk").sum())
+    n_low=int((scored_df["band"]=="Low Risk").sum())
+    n_intensive=int((scored_df["action"]=="Intensive Mentoring and Counseling").sum())
+    n_overflow=int(scored_df["action"].astype(str).str.contains("capacity overflow",na=False).sum())
 
-    story.append(_p("Batch Cohort Risk Report", S["cover_title"]))
-    story.append(_p("Capacity-Aware Decision Support System", S["subtitle"]))
-    story.append(_p(
-        f"Model: {model_name}  |  Version: {MODEL_VERSION}  |  Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}  |  Cohort: {n_total:,} students",
-        S["small"],
-    ))
-    story.append(Spacer(1, 8))
-
-    kpi_rows = [[
-        _p("COHORT SIZE", S["kpi_label"]), _p("HIGH RISK", S["kpi_label"]), _p("INTENSIVE SLOTS", S["kpi_label"]), _p("OVERFLOW", S["kpi_label"]),
-    ], [
-        _p(f"{n_total:,}", S["kpi_value"]), _p(f"{n_high:,}", ParagraphStyle("HighKPI", parent=S["kpi_value"], textColor=colors.HexColor("#DC4A59"))),
-        _p(f"{n_intensive} / {CAPACITY_LIMIT}", S["kpi_value"]), _p(f"{n_overflow:,}", ParagraphStyle("OverKPI", parent=S["kpi_value"], textColor=colors.HexColor("#F5A524"))),
-    ], [
-        _p("Students scored", S["kpi_sub"]), _p(f"{n_high/n_total:.1%} of cohort" if n_total else "0", S["kpi_sub"]),
-        _p("Capacity-aware allocation", S["kpi_sub"]), _p("Routed to workshops", S["kpi_sub"]),
-    ]]
-    kt = Table(kpi_rows, colWidths=[4.08*cm]*4, hAlign="LEFT")
+    story.append(_pdf_banner("Batch Cohort Risk Report","Capacity-Aware Decision Support System",report_id,stamp))
+    story.append(Spacer(1,8))
+    story.append(_p(f"Model: {model_name}  |  Version: {MODEL_VERSION}  |  Cohort: {n_total:,} students",S["small"]))
+    story.append(Spacer(1,7))
+    kpi_rows=[
+        [_p("COHORT SIZE",S["kpi_label"]),_p("HIGH RISK",S["kpi_label"]),_p("INTENSIVE SLOTS",S["kpi_label"]),_p("OVERFLOW",S["kpi_label"])],
+        [_p(f"{n_total:,}",S["kpi_value"]),_p(f"{n_high:,}",ParagraphStyle("HighKPI",parent=S["kpi_value"],textColor=_band_color("High Risk"))),
+         _p(f"{n_intensive} / {CAPACITY_LIMIT}",S["kpi_value"]),_p(f"{n_overflow:,}",ParagraphStyle("OverKPI",parent=S["kpi_value"],textColor=_band_color("Medium Risk")))],
+        [_p("Students scored",S["kpi_sub"]),_p(f"{n_high/n_total:.1%} of cohort" if n_total else "0",S["kpi_sub"]),
+         _p("Capacity-aware allocation",S["kpi_sub"]),_p("Routed to workshops",S["kpi_sub"])],
+    ]
+    kt=Table(kpi_rows,colWidths=[4.08*cm]*4,hAlign="LEFT")
     kt.setStyle(TableStyle([
-        ("BOX", (0,0), (-1,-1), .6, colors.HexColor("#DFE6F0")), ("INNERGRID", (0,0), (-1,-1), .35, colors.HexColor("#EDF1F6")),
-        ("VALIGN", (0,0), (-1,-1), "TOP"), ("LEFTPADDING", (0,0), (-1,-1), 7), ("RIGHTPADDING", (0,0), (-1,-1), 7),
-        ("TOPPADDING", (0,0), (-1,-1), 6), ("BOTTOMPADDING", (0,0), (-1,-1), 6),
-    ])); story.append(kt)
-    story.append(Spacer(1, 10))
-
-    story.append(Paragraph("1. Cohort Snapshot", S["h1"]))
-    snap = [["Metric", "Value"]] + [[str(k), str(v)] for k, v in summary_df.items()]
-    story.append(_std_table(snap, col_widths=[7.2*cm, 9.1*cm]))
-
-    story.append(Paragraph("2. Cohort Distributions", S["h1"]))
+        ("BOX",(0,0),(-1,-1),.6,colors.HexColor("#DFE6F0")),("INNERGRID",(0,0),(-1,-1),.35,colors.HexColor("#EDF1F6")),
+        ("VALIGN",(0,0),(-1,-1),"TOP"),("LEFTPADDING",(0,0),(-1,-1),7),("RIGHTPADDING",(0,0),(-1,-1),7),
+        ("TOPPADDING",(0,0),(-1,-1),6),("BOTTOMPADDING",(0,0),(-1,-1),6),
+    ]))
+    story.append(kt); story.append(Spacer(1,9))
+    story.append(Paragraph("1. Cohort Snapshot",S["h1"]))
+    story.append(_std_table([["Metric","Value"]]+[[str(k),str(v)] for k,v in summary_df.items()],col_widths=[7.2*cm,9.1*cm]))
+    story.append(Paragraph("2. Cohort Distributions",S["h1"]))
     if dist_png and hist_png:
-        pair = Table([[
-            RLImage(io.BytesIO(dist_png), width=7.8*cm, height=4.35*cm),
-            RLImage(io.BytesIO(hist_png), width=7.8*cm, height=4.35*cm),
-        ]], colWidths=[8.0*cm, 8.0*cm], hAlign="LEFT")
-        pair.setStyle(TableStyle([("VALIGN", (0,0), (-1,-1), "TOP"), ("LEFTPADDING", (0,0), (-1,-1), 0), ("RIGHTPADDING", (0,0), (-1,-1), 3), ("TOPPADDING", (0,0), (-1,-1), 0), ("BOTTOMPADDING", (0,0), (-1,-1), 0)]))
-        story.append(pair)
+        left=_rl_img(dist_png,max_width_cm=7.8,max_height_cm=4.7); right=_rl_img(hist_png,max_width_cm=7.8,max_height_cm=4.7)
+        if left and right:
+            pair=Table([[left,right]],colWidths=[8.0*cm,8.0*cm],hAlign="LEFT")
+            pair.setStyle(TableStyle([("VALIGN",(0,0),(-1,-1),"TOP"),("LEFTPADDING",(0,0),(-1,-1),0),("RIGHTPADDING",(0,0),(-1,-1),3),("TOPPADDING",(0,0),(-1,-1),0),("BOTTOMPADDING",(0,0),(-1,-1),0)]))
+            story.append(pair)
     elif dist_png:
-        story.append(RLImage(io.BytesIO(dist_png), width=14.5*cm, height=8.0*cm, hAlign="CENTER"))
+        img=_rl_img(dist_png,max_width_cm=14.7,max_height_cm=8.0)
+        if img: story.append(img)
     elif hist_png:
-        story.append(RLImage(io.BytesIO(hist_png), width=14.5*cm, height=8.0*cm, hAlign="CENTER"))
-    story.append(_callout(
-        "Allocation reading",
-        f"Risk bands use Low < {LOW_TH:.0%}, Medium < {HIGH_TH:.0%}, and High ≥ {HIGH_TH:.0%}. Up to {CAPACITY_LIMIT} high-risk students are allocated to intensive mentoring; high-risk overflow is routed to scalable workshops and monitoring.",
-    ))
+        img=_rl_img(hist_png,max_width_cm=14.7,max_height_cm=8.0)
+        if img: story.append(img)
+    else:
+        story.append(_callout("Chart rendering fallback","One or more cohort charts could not be rendered in this environment. The tabular cohort summary and annotated CSV remain the complete machine-readable outputs."))
+    story.append(_callout("Allocation reading",f"Risk bands use Low < {LOW_TH:.0%}, Medium < {HIGH_TH:.0%}, and High >= {HIGH_TH:.0%}. Up to {CAPACITY_LIMIT} high-risk students are allocated to intensive mentoring; high-risk overflow is routed to scalable workshops and monitoring."))
 
     story.append(PageBreak())
-    story.append(Paragraph("3. Capacity Allocation Curve", S["h1"]))
-    story.append(_p(
-        "The model-ranked curve shows the cumulative fraction of predicted cohort risk captured as increasingly more students are selected for intervention. The vertical marker indicates the current operational capacity.", S["body"]
-    ))
+    story.append(Paragraph("3. Capacity Allocation Curve",S["h1"]))
+    story.append(_p("The model-ranked curve shows the cumulative fraction of predicted cohort risk captured as increasingly more students are selected for intervention. The vertical marker indicates the current operational capacity.",S["body"]))
     if curve_png:
-        story.append(RLImage(io.BytesIO(curve_png), width=16.3*cm, height=8.75*cm))
-
-    alloc_rows = [["Tier / action", "Students", "Share", "Operational note"],
-                  ["High Risk", n_high, f"{n_high/n_total:.1%}" if n_total else "0", "Top risk tier"],
-                  ["Intensive Mentoring", n_intensive, f"{n_intensive/n_total:.1%}" if n_total else "0", f"Capped at {CAPACITY_LIMIT} slots"],
-                  ["High-risk overflow", n_overflow, f"{n_overflow/n_total:.1%}" if n_total else "0", "Workshop + monitoring"],
-                  ["Medium Risk", n_med, f"{n_med/n_total:.1%}" if n_total else "0", "Workshop + monitoring"],
-                  ["Low Risk", n_low, f"{n_low/n_total:.1%}" if n_total else "0", "General academic support"]]
-    story.append(Paragraph("4. Capacity Allocation Breakdown", S["h2"]))
-    story.append(_std_table(alloc_rows, col_widths=[5.0*cm, 2.4*cm, 2.5*cm, 6.4*cm]))
+        img=_rl_img(curve_png,max_width_cm=16.3,max_height_cm=9.0)
+        if img: story.append(img); story.append(_p("Capacity marker and cumulative risk captured under the current prototype allocation rule.",S["caption"]))
+    alloc_rows=[
+        ["Tier / action","Students","Share","Operational note"],
+        ["High Risk",n_high,f"{n_high/n_total:.1%}" if n_total else "0","Top risk tier"],
+        ["Intensive Mentoring",n_intensive,f"{n_intensive/n_total:.1%}" if n_total else "0",f"Capped at {CAPACITY_LIMIT} slots"],
+        ["High-risk overflow",n_overflow,f"{n_overflow/n_total:.1%}" if n_total else "0","Workshop + monitoring"],
+        ["Medium Risk",n_med,f"{n_med/n_total:.1%}" if n_total else "0","Workshop + monitoring"],
+        ["Low Risk",n_low,f"{n_low/n_total:.1%}" if n_total else "0","General academic support"],
+    ]
+    story.append(Paragraph("4. Capacity Allocation Breakdown",S["h2"]))
+    story.append(_std_table(alloc_rows,col_widths=[5.0*cm,2.4*cm,2.5*cm,6.4*cm]))
 
     story.append(PageBreak())
-    story.append(Paragraph(f"5. Priority Queue · Top {min(top_n, len(scored_df))}", S["h1"]))
-    story.append(_p(
-        "Students are ordered by predicted dropout probability after scoring. The student index corresponds to the sorted ordering in the annotated cohort output. The full scored CSV remains the complete machine-readable record.", S["body"]
-    ))
-    top_rows = [["Rank", "Student idx", "Probability", "Band", "Action"]]
-    for rank, (_, row) in enumerate(scored_df.head(top_n).iterrows(), 1):
-        top_rows.append([str(rank), str(row.get("student_index", "")), f"{float(row['probability']):.1%}", str(row["band"]), str(row["action"])])
-    story.append(Spacer(1, 4))
-    story.append(_std_table(top_rows, col_widths=[1.1*cm, 2.2*cm, 2.3*cm, 2.8*cm, 7.9*cm]))
+    story.append(Paragraph(f"5. Priority Queue - Top {min(top_n,len(scored_df))}",S["h1"]))
+    story.append(_p("Students are ordered by predicted dropout probability after scoring. The student index corresponds to the sorted ordering in the annotated cohort output. The full scored CSV remains the complete machine-readable record.",S["body"]))
+    top_rows=[["Rank","Student idx","Probability","Band","Action"]]
+    for rank,(_,row) in enumerate(scored_df.head(top_n).iterrows(),1):
+        top_rows.append([str(rank),str(row.get("student_index","")),f"{float(row['probability']):.1%}",str(row["band"]),str(row["action"])])
+    story.append(_std_table(top_rows,col_widths=[1.1*cm,2.2*cm,2.3*cm,2.8*cm,7.9*cm]))
 
-    # Band detail, compact and capped to keep the report readable.
     story.append(PageBreak())
-    story.append(Paragraph("6. Band Membership Detail", S["h1"]))
-    for band_name in ["High Risk", "Medium Risk", "Low Risk"]:
-        subset = scored_df[scored_df["band"] == band_name]
-        story.append(Paragraph(f"{band_name} · {len(subset):,} students", S["h2"]))
+    story.append(Paragraph("6. Band Membership Detail",S["h1"]))
+    for band_name in ["High Risk","Medium Risk","Low Risk"]:
+        subset=scored_df[scored_df["band"]==band_name]
+        story.append(Paragraph(f"{band_name} - {len(subset):,} students",S["h2"]))
         if subset.empty:
-            story.append(_p("No students are currently in this band.", S["body"]))
-            continue
-        rows = [["Student idx", "Probability", "Action"]]
-        for _, row in subset.head(60).iterrows():
-            rows.append([str(row.get("student_index", "")), f"{float(row['probability']):.1%}", str(row["action"])])
-        story.append(_std_table(rows, col_widths=[3.0*cm, 3.0*cm, 10.3*cm]))
-        if len(subset) > 60:
-            story.append(_p(f"Showing the first 60 of {len(subset):,} students in this band; the full list is available in the annotated CSV.", S["small"]))
-        story.append(Spacer(1, 7))
+            story.append(_p("No students are currently in this band.",S["body"])); continue
+        rows=[["Student idx","Probability","Action"]]
+        for _,row in subset.head(60).iterrows():
+            rows.append([str(row.get("student_index","")),f"{float(row['probability']):.1%}",str(row["action"])])
+        story.append(_std_table(rows,col_widths=[3.0*cm,3.0*cm,10.3*cm]))
+        if len(subset)>60:
+            story.append(_p(f"Showing the first 60 of {len(subset):,} students in this band; the full list is available in the annotated CSV.",S["small"]))
+        story.append(Spacer(1,7))
 
     story.append(PageBreak())
-    story.append(Paragraph("7. Methodology and Limitations", S["h1"]))
+    story.append(Paragraph("7. Methodology and Limitations",S["h1"]))
     story.append(_std_table([
-        ["Topic", "Current prototype description"],
-        ["Model", "XGBoost gradient-boosted classifier; 400 trees; depth 4; learning rate 0.05; subsample 0.8; colsample-by-tree 0.8; positive-class reweighting."],
-        ["Training cohort", "3,630 students after removing the Enrolled class; 36 model features; current application workflow uses an 80/20 stratified split."],
-        ["Validation reporting", "Current report configuration cites cross-validated AUC above 0.950 and Brier score 0.058."],
-        ["Fairness example", "Scholarship-vs-non-scholarship TPR gap reported as 0.022 before mitigation and 0.003 after group-specific thresholding."],
-        ["Capacity", f"C = {CAPACITY_LIMIT} is a prototype operational parameter and should be tuned to actual institutional resources."],
-        ["Human oversight", "Predictions are probabilistic and intended as decision support; they are not causal claims or fully automated decisions."],
-    ], col_widths=[4.2*cm, 12.1*cm]))
-    story.append(Spacer(1, 10))
-    story.append(_hr())
-    story.append(_p(
-        f"Generated automatically · Report ID {datetime.now().strftime('%Y%m%d%H%M%S')}", S["small"]
-    ))
-    doc.build(story, onFirstPage=_pdf_page, onLaterPages=_pdf_page)
-    buffer.seek(0)
-    return buffer
+        ["Topic","Current prototype description"],
+        ["Model","XGBoost gradient-boosted classifier; 400 trees; depth 4; learning rate 0.05; subsample 0.8; colsample-by-tree 0.8; positive-class reweighting."],
+        ["Training cohort","3,630 students after removing the Enrolled class; 36 model features; current application workflow uses an 80/20 stratified split."],
+        ["Validation reporting","Current report configuration cites cross-validated AUC above 0.950 and Brier score 0.058."],
+        ["Fairness example","Scholarship-vs-non-scholarship TPR gap reported as 0.022 before mitigation and 0.003 after group-specific thresholding."],
+        ["Capacity",f"C = {CAPACITY_LIMIT} is a prototype operational parameter and should be tuned to actual institutional resources."],
+        ["Human oversight","Predictions are probabilistic and intended as decision support; they are not causal claims or fully automated decisions."],
+    ],col_widths=[4.2*cm,12.1*cm]))
+    story.append(Spacer(1,10))
+    story.append(_callout("Decision-support notice","Use this report as structured evidence for advising and follow-up. Review the underlying student context before taking action, and keep intervention decisions under appropriate human supervision.",bg="#FFF9EA",border="#F4DEAC",title_color="#9A5A05"))
+    story.append(Spacer(1,10)); story.append(_hr())
+    story.append(_p(f"Generated automatically | Report ID {report_id} | {stamp} | {INSTITUTION_NAME}",S["small"]))
+    doc.build(story,onFirstPage=_pdf_page,onLaterPages=_pdf_page,canvasmaker=_NumberedCanvas)
+    buffer.seek(0); return buffer
 
 
 # ==========================================================
@@ -1629,8 +1679,8 @@ def render_header():
           <div class="hero-l">
             <div class="logo">{LOGO_SVG}</div>
             <div>
-              <div class="hero-title">Capacity-Aware Decision Support System</div>
-              <div class="hero-sub">Interpretable student retention workspace · prototype</div>
+              <div class="hero-title">{PRODUCT_NAME}</div>
+              <div class="hero-sub">Interpretable student retention workspace · prototype · {INSTITUTION_NAME}</div>
             </div>
           </div>
           <div class="hero-r">
@@ -1639,9 +1689,9 @@ def render_header():
             <span class="gchip"><i></i>Model ready</span>
           </div>
         </div>
+        <div class="privacy-strip"><span class="privacy-dot"></span><span>{TEXT["session_data"]}</span><span aria-hidden="true">•</span><span>{TEXT["decision_support"]}</span></div>
         """
     )
-
 
 def render_sidebar():
     with st.sidebar:
@@ -1666,32 +1716,83 @@ def render_sidebar():
 
 
 def plot_fairness_tpr():
-    groups = ["Non-Scholarship", "Scholarship"]
-    fig = _plot_base(height=335, margin=dict(l=46, r=22, t=74, b=54))
-    fig.add_trace(go.Bar(
-        name="Unmitigated",
-        x=groups, y=[0.907, 0.885], marker_color="#AAB5C5", marker_line_width=0,
-        text=["90.7%", "88.5%"], textposition="inside", insidetextanchor="middle",
-        hovertemplate="<b>%{x}</b><br>Unmitigated TPR: %{y:.1%}<extra></extra>",
-    ))
-    fig.add_trace(go.Bar(
-        name="Mitigated",
-        x=groups, y=[0.849, 0.846], marker_color="#4767E8", marker_line_width=0,
-        text=["84.9%", "84.6%"], textposition="inside", insidetextanchor="middle",
-        hovertemplate="<b>%{x}</b><br>Mitigated TPR: %{y:.1%}<extra></extra>",
-    ))
-    fig.update_layout(
-        title="True Positive Rate by group",
-        barmode="group",
-        yaxis=dict(range=[0, 1], title="TPR", tickformat=".0%"),
-        legend=dict(orientation="h", x=0, y=1.07, yanchor="bottom", font=dict(size=10)),
-    )
+    groups=["Non-Scholarship","Scholarship"]
+    fig=_plot_base(height=350,margin=dict(l=52,r=24,t=48,b=92))
+    fig.add_trace(go.Bar(name="Unmitigated",x=groups,y=[0.907,0.885],marker_color="#AAB5C5",marker_line_width=0,
+                         text=["90.7%","88.5%"],textposition="inside",insidetextanchor="middle",
+                         hovertemplate="<b>%{x}</b><br>Unmitigated TPR: %{y:.1%}<extra></extra>"))
+    fig.add_trace(go.Bar(name="Mitigated",x=groups,y=[0.849,0.846],marker_color=COLORS["brand"],marker_line_width=0,
+                         text=["84.9%","84.6%"],textposition="inside",insidetextanchor="middle",
+                         hovertemplate="<b>%{x}</b><br>Mitigated TPR: %{y:.1%}<extra></extra>"))
+    fig.update_layout(title="True Positive Rate by group",barmode="group",
+                      yaxis=dict(range=[0,1],title="TPR",tickformat=".0%"),
+                      legend=dict(orientation="h",x=0.5,xanchor="center",y=-0.17,yanchor="top",font=dict(size=10)))
     return fig
 
 
-# ==========================================================
-# RESULT RENDERERS
-# ==========================================================
+def _toast(message, icon=None):
+    try:
+        if hasattr(st, "toast"):
+            st.toast(message, icon=icon)
+    except Exception:
+        pass
+
+
+def render_welcome():
+    st.session_state.setdefault("welcome_dismissed", False)
+    if not st.session_state["welcome_dismissed"]:
+        _md(
+            f"""
+            <div class="welcome">
+              <div class="welcome-eyebrow">{TEXT["welcome_eyebrow"]}</div>
+              <div class="welcome-title">{TEXT["welcome_title"]}</div>
+              <p class="welcome-sub">{TEXT["welcome_subtitle"]}</p>
+              <div class="welcome-steps">
+                <div class="welcome-step"><b>1. Enter</b><span>Provide the visible student indicators used by the current workflow.</span></div>
+                <div class="welcome-step"><b>2. Understand</b><span>Inspect the risk band, SHAP drivers, cohort context, and what-if response.</span></div>
+                <div class="welcome-step"><b>3. Act</b><span>Review the capacity-aware action plan and export a structured PDF.</span></div>
+              </div>
+            </div>
+            """
+        )
+        c1,c2=st.columns([1,4],gap="small")
+        with c1:
+            if st.button(TEXT["start"],type="primary",use_container_width=True,key="welcome_start"):
+                st.session_state["welcome_dismissed"]=True
+                _toast("Workspace ready","✓")
+                st.rerun()
+        with c2:
+            st.caption(TEXT["privacy"])
+    with st.expander(TEXT["tour"],expanded=False):
+        _md(
+            f"""
+            <div class="tour-shell">
+              <div class="tour-eyebrow">20 sec</div>
+              <div class="tour-grid">
+                <div class="tour-item"><b>{TEXT["tour_1"]}</b><span>{TEXT["tour_1_d"]}</span></div>
+                <div class="tour-item"><b>{TEXT["tour_2"]}</b><span>{TEXT["tour_2_d"]}</span></div>
+                <div class="tour-item"><b>{TEXT["tour_3"]}</b><span>{TEXT["tour_3_d"]}</span></div>
+                <div class="tour-item"><b>{TEXT["tour_4"]}</b><span>{TEXT["tour_4_d"]}</span></div>
+              </div>
+            </div>
+            """
+        )
+
+
+def render_footer():
+    model_card=f'<a href="{MODEL_CARD_URL}" target="_blank" rel="noopener">Model card</a>' if MODEL_CARD_URL else "Model card: configure link"
+    support=f'<a href="{SUPPORT_URL}" target="_blank" rel="noopener">Support</a>' if SUPPORT_URL else "Support: configure link"
+    _md(
+        f"""
+        <div class="footer-shell">
+          <div><b>{PRODUCT_NAME}</b><br>{MODEL_VERSION} · {INSTITUTION_NAME}</div>
+          <div>{model_card} · {support} · Privacy by design · No third-party trackers</div>
+          <div>Built for human-supervised student-retention decision support.</div>
+        </div>
+        """
+    )
+
+
 def render_empty_state():
     _md(
         f"""
@@ -1707,25 +1808,20 @@ def render_empty_state():
 
 
 def _scenario_probability_plot(scenarios):
-    labels = [s["label"] for s in scenarios]
-    values = [s["probability"] for s in scenarios]
-    colors_list = ["#2C467E"] + ["#4767E8"] * (len(values) - 1)
-    fig = _plot_base(height=290, margin=dict(l=42, r=22, t=46, b=82))
-    fig.add_trace(go.Bar(
-        x=labels, y=values,
-        marker_color=colors_list,
-        marker_line_width=0,
-        text=[f"{v:.1%}" for v in values], textposition="outside", cliponaxis=False,
-        hovertemplate="<b>%{x}</b><br>Predicted probability: %{y:.1%}<extra></extra>",
-    ))
-    fig.update_layout(
-        title="Saved scenario comparison",
-        showlegend=False,
-        yaxis=dict(range=[0, min(1.05, max(.12, max(values) * 1.16))], tickformat=".0%", title="Dropout probability"),
-        xaxis=dict(tickangle=-18, automargin=True),
-    )
+    labels_full=[str(s["label"]) for s in scenarios]
+    labels_axis=[(label[:16]+"...") if len(label)>19 else label for label in labels_full]
+    values=[float(s["probability"]) for s in scenarios]
+    marker_colors=[COLORS["navy"]]+[COLORS["brand"]]*(len(values)-1)
+    fig=_plot_base(height=315,margin=dict(l=46,r=24,t=48,b=94))
+    fig.add_trace(go.Bar(x=labels_axis,y=values,marker_color=marker_colors,marker_line_width=0,
+                         customdata=np.array(labels_full,dtype=object),text=[f"{v:.1%}" for v in values],
+                         textposition="outside",cliponaxis=False,
+                         hovertemplate="<b>%{customdata}</b><br>Predicted probability: %{y:.1%}<extra></extra>"))
+    y_max=min(1.05,max(0.12,(max(values)*1.20 if values else 0.12)))
+    fig.update_layout(title="Saved scenario comparison",showlegend=False,
+                      yaxis=dict(range=[0,y_max],tickformat=".0%",title="Dropout probability"),
+                      xaxis=dict(tickangle=0,automargin=True,tickfont=dict(size=9)))
     return fig
-
 
 def render_assessment(res, model, medians, feature_cols):
     p_dropout = res["p"]
@@ -1776,8 +1872,10 @@ def render_assessment(res, model, medians, feature_cols):
         )
         col_gauge, col_band = st.columns([1, 1.28], gap="medium")
         with col_gauge:
+            st.markdown('<span class="sr-only">Probability gauge for the current student assessment.</span>', unsafe_allow_html=True)
             st.plotly_chart(plot_gauge(p_dropout, band), use_container_width=True, config={"displayModeBar": False, "responsive": True})
         with col_band:
+            st.markdown('<span class="sr-only">Risk-band placement against the fixed low, medium, and high risk thresholds.</span>', unsafe_allow_html=True)
             st.plotly_chart(plot_threshold_explorer(p_dropout), use_container_width=True, config={"displayModeBar": False, "responsive": True})
         _kpi_grid([
             _kpi("Current band", band, "Operational tier", tone),
@@ -1791,8 +1889,10 @@ def render_assessment(res, model, medians, feature_cols):
         )
         col_water, col_donut = st.columns([1.55, 1], gap="medium")
         with col_water:
+            st.markdown('<span class="sr-only">SHAP bar chart showing the strongest local risk-increasing and risk-reducing indicators.</span>', unsafe_allow_html=True)
             st.plotly_chart(plot_shap_waterfall(feature_cols, shap_vals, top_n=6), use_container_width=True, config={"displayModeBar": False, "responsive": True})
         with col_donut:
+            st.markdown('<span class="sr-only">Donut chart showing total risk-increasing and risk-reducing SHAP contribution.</span>', unsafe_allow_html=True)
             st.plotly_chart(plot_contribution_donut(shap_vals), use_container_width=True, config={"displayModeBar": False, "responsive": True})
 
         top_pos = [(friendly_name(feature_cols[i]), float(shap_vals[i])) for i in np.argsort(shap_vals)[::-1] if shap_vals[i] > 0][:3]
@@ -1947,6 +2047,22 @@ def render_assessment(res, model, medians, feature_cols):
                 f'<b>Next checkpoint:</b> {st.session_state["followup_date"].strftime("%d %b %Y")}</div>'
             )
 
+    _md(
+        f'<div class="closing"><div class="closing-title">{TEXT["report_ready"]}</div><div class="closing-sub">Risk: <b>{p_dropout:.1%}</b> · Band: <b>{band}</b> · Action: <b>{action}</b>. The report is ready for review and download. Continue with human-supervised follow-up using the information above.</div></div>'
+    )
+    c1,c2=st.columns([1,1],gap="small")
+    with c1:
+        st.download_button("Download report again",data=res["pdf"],file_name=res["pdf_name"],mime="application/pdf",use_container_width=True,key="dl_single_pdf_outro")
+    with c2:
+        if st.button(TEXT["another"],use_container_width=True,key="assess_another"):
+            st.session_state["assessment"]=None
+            st.session_state["saved_scenarios"]=[]
+            st.session_state["advisor_note"]=""
+            st.session_state["case_status"]="Open"
+            st.session_state["followup_date"]=datetime.now().date()
+            _toast("Ready for a new assessment","→")
+            st.rerun()
+
 
 def run_batch(batch_df, model, medians, feature_cols):
     working = batch_df.copy()
@@ -2050,6 +2166,8 @@ def render_batch(b):
         _kpi("Capacity overflow", f"{b['n_overflow']:,}", "routed to workshops"),
         _kpi("Risk captured at capacity", f"{b['risk_at_cap']:.1%}", f"{b['lift']:.2f}x lift vs random"),
     ])
+    capacity_pct=min(100,(b["n_intensive"]/CAPACITY_LIMIT*100) if CAPACITY_LIMIT else 0)
+    _md(f'<div class="progress-shell" aria-label="Intensive mentoring capacity used"><div class="progress-track"><div class="progress-fill" style="width:{capacity_pct:.1f}%"></div></div><div class="progress-caption"><span>Intensive mentoring capacity</span><span>{b["n_intensive"]} / {CAPACITY_LIMIT}</span></div></div>')
 
     d1, d2 = st.columns(2, gap="medium")
     with d1:
@@ -2093,6 +2211,7 @@ def main():
 
     render_header()
     render_sidebar()
+    render_welcome()
     _md('<div class="workspace-label"><i></i>Decision support workspace</div>')
 
     tab_eval, tab_batch, tab_info, tab_fairness = st.tabs([
@@ -2187,20 +2306,24 @@ def main():
                     )
                     cf_png = _fig_to_png_bytes(cf_fig, width=850, height=420)
 
-                    pdf_buffer = build_pdf_report(
-                        student_inputs=user_input,
-                        p_dropout=p_dropout,
-                        band=band,
-                        action=action,
-                        shap_vals=shap_vals,
-                        feature_cols=feature_cols,
-                        medians=medians,
-                        model=model,
-                        counterfactual_feature=cf_feature_default,
-                        counterfactual_curve_png=cf_png,
-                        radar_png=radar_png,
-                        top_k=10,
-                    )
+                    try:
+                        pdf_buffer = build_pdf_report(
+                            student_inputs=user_input,
+                            p_dropout=p_dropout,
+                            band=band,
+                            action=action,
+                            shap_vals=shap_vals,
+                            feature_cols=feature_cols,
+                            medians=medians,
+                            model=model,
+                            counterfactual_feature=cf_feature_default,
+                            counterfactual_curve_png=cf_png,
+                            radar_png=radar_png,
+                            top_k=10,
+                        )
+                    except Exception:
+                        pdf_buffer = io.BytesIO()
+                        _toast("Assessment completed; PDF rendering fell back gracefully.", "!")
                     now = datetime.now()
                     st.session_state["saved_scenarios"] = []
                     st.session_state["case_status"] = "Open"
@@ -2263,6 +2386,10 @@ def main():
             except Exception as e:
                 st.error(f"Could not read CSV: {e}")
 
+        if batch_df is not None and batch_df.empty:
+            st.warning("The uploaded CSV is empty. Add at least one student row and upload it again.")
+            batch_df = None
+
         if batch_df is not None:
             with st.expander(f"Uploaded data preview  |  {len(batch_df):,} rows", expanded=False):
                 st.dataframe(batch_df.head(10), use_container_width=True)
@@ -2275,8 +2402,14 @@ def main():
             if run_clicked:
                 with st.spinner("Scoring cohort and applying capacity constraint..."):
                     time.sleep(0.3)
-                    st.session_state["batch_result"] = run_batch(batch_df, model, medians, feature_cols)
-                    st.session_state["batch_key"] = file_key
+                    try:
+                        st.session_state["batch_result"] = run_batch(batch_df, model, medians, feature_cols)
+                        st.session_state["batch_key"] = file_key
+                        _toast("Cohort scoring complete", "✓")
+                    except Exception:
+                        st.session_state["batch_result"] = None
+                        st.session_state["batch_key"] = None
+                        st.error("The cohort could not be scored. Check the CSV values and feature columns, then try again.")
 
             if st.session_state.get("batch_result") is not None and st.session_state.get("batch_key") == file_key:
                 render_batch(st.session_state["batch_result"])
@@ -2372,6 +2505,8 @@ cumulative risk-captured curve.
                 """
             )
         st.plotly_chart(plot_fairness_tpr(), use_container_width=True, config={"displayModeBar": False})
+
+    render_footer()
 
 
 if __name__ == "__main__":

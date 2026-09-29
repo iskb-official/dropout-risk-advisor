@@ -73,403 +73,285 @@ FEATURE_LABELS = {
 }
 
 # ==========================================================
-# MODERN CSS
+# PRODUCT UI THEME  ("Campus Light")
+# Presentation layer only: Plotly theme + CSS design system + small JS enhancer.
 # ==========================================================
-# ==========================================================
-# UI THEME v2 - "Campus Light"  (presentation only, no logic changes)
-#
-# Same install method as before:
-#   python apply_theme.py      (replaces the "# MODERN CSS" section of app.py)
-# Or paste this whole file over the st.markdown(<style>...) call manually.
-#
-# Contains: Plotly theme + full CSS design system + tiny JS enhancer.
-# ==========================================================
-import plotly.graph_objects as go
 import plotly.io as pio
 import streamlit.components.v1 as components
 
-# ---------- Plotly theme ----------
 _FONT = "Inter, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
 pio.templates["campus"] = go.layout.Template(
     layout=go.Layout(
-        font=dict(family=_FONT, size=13, color="#475569"),
-        title=dict(font=dict(size=15, color="#0B1B3A", family=_FONT), x=0, xanchor="left"),
-        colorway=["#1D4ED8", "#0E9F8E", "#D97706", "#DC2626", "#64748B"],
-        xaxis=dict(gridcolor="#EEF2F7", linecolor="#D5DCE8", zerolinecolor="#94A3B8",
-                   ticks="outside", tickcolor="#D5DCE8", title=dict(font=dict(size=12, color="#64748B"))),
-        yaxis=dict(gridcolor="#EEF2F7", linecolor="#D5DCE8", zerolinecolor="#94A3B8",
-                   title=dict(font=dict(size=12, color="#64748B"))),
-        hoverlabel=dict(bgcolor="#0B1B3A", bordercolor="#0B1B3A",
+        font=dict(family=_FONT, size=12.5, color="#4A5876"),
+        title=dict(font=dict(size=14, color="#0E1B3D", family=_FONT), x=0, xanchor="left"),
+        colorway=["#3B5BDB", "#12A594", "#F5A524", "#DC3F4A", "#64748B"],
+        xaxis=dict(gridcolor="#EEF2F8", linecolor="#D5DCE8", zerolinecolor="#94A3B8",
+                   ticks="outside", tickcolor="#D5DCE8", title=dict(font=dict(size=11.5, color="#7C89A6"))),
+        yaxis=dict(gridcolor="#EEF2F8", linecolor="#D5DCE8", zerolinecolor="#94A3B8",
+                   title=dict(font=dict(size=11.5, color="#7C89A6"))),
+        hoverlabel=dict(bgcolor="#0E1B3D", bordercolor="#0E1B3D",
                         font=dict(color="#FFFFFF", family=_FONT, size=12)),
-        legend=dict(font=dict(size=12), bgcolor="rgba(0,0,0,0)"),
+        legend=dict(font=dict(size=11.5), bgcolor="rgba(0,0,0,0)"),
     )
 )
 pio.templates.default = "campus"
 
-# ---------- CSS design system ----------
 st.markdown(
     """
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 :root{
-  color-scheme: light;
-  --navy-900:#0B1B3A; --navy-700:#14306B; --blue-600:#1D4ED8; --blue-500:#2F63E0;
-  --blue-100:#E3ECFF; --blue-50:#F1F5FF;
-  --ink:#0B1B3A; --text:#475569; --muted:#7A8799;
-  --bg:#F6F8FC; --surface:#FFFFFF; --line:#E4E9F2; --line-strong:#CBD5E5;
-  --ok:#0B7F71; --ok-bg:#ECFBF7; --ok-line:#9EE0D2;
-  --warn:#9A5B06; --warn-bg:#FFF8E6; --warn-line:#F6D98A;
-  --bad:#B42318; --bad-bg:#FEF3F2; --bad-line:#F7B7B0;
-  --r-sm:8px; --r-md:12px; --r-lg:16px;
-  --sh-1:0 1px 2px rgba(11,27,58,.05);
-  --sh-2:0 1px 3px rgba(11,27,58,.06), 0 6px 16px rgba(11,27,58,.06);
-  --sh-3:0 12px 32px rgba(11,27,58,.14);
-  --ring:0 0 0 3px rgba(47,99,224,.22);
+  color-scheme:light;
+  --ink:#0E1B3D; --text:#4A5876; --muted:#7C89A6;
+  --bg:#F4F6FB; --surface:#FFFFFF; --line:#E5EAF3; --line-2:#CFD8E8;
+  --brand:#3B5BDB; --brand-d:#2B44B8; --brand-l:#EAF0FF; --brand-ll:#F5F8FF;
+  --ok:#0B8A78; --ok-bg:#E8F8F4; --ok-line:#A6E3D6; --ok-s:#12A594;
+  --warn:#9A5A05; --warn-bg:#FFF6E0; --warn-line:#F6D48A; --warn-s:#F5A524;
+  --bad:#B42335; --bad-bg:#FEEEF0; --bad-line:#F5B5BD; --bad-s:#DC3F4A;
+  --r:14px; --r-lg:18px;
+  --sh1:0 1px 2px rgba(14,27,61,.05);
+  --sh2:0 1px 2px rgba(14,27,61,.04), 0 8px 24px rgba(14,27,61,.06);
+  --sh3:0 16px 40px rgba(14,27,61,.16);
+  --ring:0 0 0 3px rgba(59,91,219,.25);
 }
 
-/* ===== Base ===== */
-html, body, .stApp, .stApp *:not(code):not(pre):not([data-testid="stIconMaterial"]):not(.material-icons):not([class*="material"]){
+/* ---------- Base ---------- */
+html, body, .stApp, .stApp *:not(code):not(pre):not([data-testid="stIconMaterial"]):not([class*="material"]){
   font-family:'Inter','Segoe UI',Roboto,Helvetica,Arial,sans-serif;
 }
 html{ -webkit-font-smoothing:antialiased; scroll-behavior:smooth; }
-.stApp{
-  background:
-    radial-gradient(1100px 380px at 12% -8%, #E8EFFF 0%, rgba(232,239,255,0) 70%),
-    var(--bg);
-  color:var(--text);
-}
-.block-container{ max-width:1240px; padding:2.6rem 2.2rem 5rem; animation:fadeUp .35s ease both; }
-@keyframes fadeUp{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
+.stApp{ background:radial-gradient(900px 320px at 8% -6%, #E6EDFF 0%, rgba(230,237,255,0) 70%), var(--bg); color:var(--text); }
+.block-container{ max-width:1320px; padding:2.6rem 2rem 4rem; animation:fadeUp .3s ease both; }
+@keyframes fadeUp{ from{opacity:0; transform:translateY(5px);} to{opacity:1; transform:none;} }
 #MainMenu, footer, [data-testid="stToolbar"], [data-testid="stDecoration"]{ display:none !important; }
-header[data-testid="stHeader"]{ background:transparent; height:2.5rem; }
-h1,h2,h3,h4,h5{ color:var(--ink); letter-spacing:-.015em; font-weight:650; }
-h2{ font-size:1.3rem; margin:1.8rem 0 .6rem; }
-h3{ font-size:1.05rem; margin:1.2rem 0 .4rem; }
-p, li, label, span{ line-height:1.6; }
-a{ color:var(--blue-600); text-decoration:none; } a:hover{ text-decoration:underline; }
-hr{ border:0; height:1px; background:var(--line); margin:2rem 0; }
-::selection{ background:var(--blue-100); color:var(--navy-900); }
+header[data-testid="stHeader"]{ background:transparent; height:2.4rem; }
+div[data-testid="stVerticalBlock"]{ gap:.8rem; }
+h1,h2,h3,h4,h5{ color:var(--ink); letter-spacing:-.015em; font-weight:700; }
+h3{ font-size:1.05rem; margin:.4rem 0 .2rem; } h4{ font-size:.98rem; margin:.3rem 0 .2rem; }
+p, li{ line-height:1.6; }
+a{ color:var(--brand); text-decoration:none; } a:hover{ text-decoration:underline; }
+hr{ border:0; height:1px; background:var(--line); margin:1rem 0; }
+::selection{ background:var(--brand-l); color:var(--ink); }
 *{ scrollbar-width:thin; scrollbar-color:#C4CEDF transparent; }
 *::-webkit-scrollbar{ width:9px; height:9px; }
 *::-webkit-scrollbar-thumb{ background:#C4CEDF; border-radius:99px; border:2px solid transparent; background-clip:content-box; }
+div[data-testid="stElementContainer"]:has(> iframe[height="0"]), div[data-testid="element-container"]:has(> iframe[height="0"]), iframe[height="0"]{ display:none !important; }
 
-/* hide the zero-height JS component so it leaves no gap */
-div[data-testid="stElementContainer"]:has(> iframe[height="0"]),
-div[data-testid="element-container"]:has(> iframe[height="0"]),
-iframe[height="0"]{ display:none !important; }
+/* ---------- Hero header ---------- */
+.hero{ position:relative; overflow:hidden; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap;
+  background:linear-gradient(120deg,#16256B 0%,#2A45C6 55%,#4C6EF5 100%); color:#fff;
+  border-radius:var(--r-lg); padding:1rem 1.3rem; margin:0 0 .9rem; box-shadow:0 10px 30px rgba(43,68,184,.28); }
+.hero::after{ content:""; position:absolute; right:-70px; top:-90px; width:280px; height:280px; border-radius:50%;
+  background:radial-gradient(circle, rgba(255,255,255,.2), rgba(255,255,255,0) 70%); }
+.hero-l{ display:flex; align-items:center; gap:.85rem; position:relative; z-index:1; }
+.logo{ width:44px; height:44px; border-radius:13px; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.3);
+  display:flex; align-items:center; justify-content:center; flex:none; }
+.hero-title{ font-size:1.18rem; font-weight:750; letter-spacing:-.015em; line-height:1.2; color:#fff; }
+.hero-sub{ font-size:.82rem; color:rgba(255,255,255,.8); margin-top:2px; }
+.hero-r{ display:flex; gap:.4rem; flex-wrap:wrap; position:relative; z-index:1; }
+.gchip{ display:inline-flex; align-items:center; gap:.4rem; font-size:.73rem; font-weight:600; color:#fff; padding:.28rem .7rem;
+  border-radius:99px; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.26); }
+.gchip i{ width:7px; height:7px; border-radius:50%; background:#5EEAD4; box-shadow:0 0 0 3px rgba(94,234,212,.28); }
 
-/* ===== Page header ===== */
-.main-header{
-  font-size:2rem; font-weight:750; color:var(--navy-900); letter-spacing:-.025em;
-  line-height:1.15; margin:0 0 .35rem;
-}
-.main-header::after{
-  content:""; display:block; width:44px; height:4px; border-radius:99px; margin-top:.7rem;
-  background:linear-gradient(90deg,var(--blue-600),#60A5FA);
-}
-.sub-header{ font-size:1.02rem; color:var(--muted); max-width:780px; margin:.4rem 0 1.6rem; }
+/* ---------- Top-level tabs = segmented nav ---------- */
+[data-baseweb="tab-list"]{ gap:.25rem; padding:.3rem; background:var(--surface); border:1px solid var(--line); border-radius:14px;
+  box-shadow:var(--sh1); position:sticky; top:2.6rem; z-index:30; margin-bottom:.9rem; }
+[data-baseweb="tab-highlight"], [data-baseweb="tab-border"]{ display:none !important; }
+button[role="tab"]{ height:auto; padding:.55rem 1.05rem; border-radius:10px; background:transparent; color:var(--muted);
+  font-weight:600; font-size:.9rem; transition:background .15s, color .15s; }
+button[role="tab"] p{ font-size:.9rem; font-weight:600; margin:0; color:inherit; }
+button[role="tab"]:hover{ background:var(--brand-ll); color:var(--brand-d); }
+button[role="tab"][aria-selected="true"]{ background:linear-gradient(180deg,#4A6BE8,#3B5BDB); color:#fff; box-shadow:0 4px 12px rgba(59,91,219,.32); }
+button[role="tab"][aria-selected="true"] p{ color:#fff; }
 
-/* ===== Sidebar ===== */
-section[data-testid="stSidebar"]{
-  background:var(--surface); border-right:1px solid var(--line);
-  box-shadow:1px 0 0 rgba(11,27,58,.02);
-}
-section[data-testid="stSidebar"] > div{ padding-top:.5rem; }
-section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"]{ padding:1rem 1.15rem 2rem; }
-section[data-testid="stSidebar"] h1{ font-size:1.2rem; margin:.2rem 0 .6rem; }
-section[data-testid="stSidebar"] h2,
-section[data-testid="stSidebar"] h3{
-  font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.09em;
-  color:var(--muted); margin:1.4rem 0 .55rem; padding-bottom:.4rem; border-bottom:1px solid var(--line);
-}
-section[data-testid="stSidebar"] [data-testid="stCaptionContainer"]{ font-size:.8rem; }
-button[data-testid="stSidebarCollapseButton"], [data-testid="stSidebarCollapsedControl"] button{
-  border-radius:var(--r-sm); color:var(--muted);
-}
+/* nested tabs = underline style */
+div[data-testid="stTabs"] div[data-testid="stTabs"] [data-baseweb="tab-list"]{
+  position:static; background:transparent; border:0; border-bottom:1px solid var(--line); border-radius:0; box-shadow:none; padding:0; gap:.15rem; margin-bottom:.8rem; }
+div[data-testid="stTabs"] div[data-testid="stTabs"] [data-baseweb="tab-highlight"]{ display:block !important; background:var(--brand); height:3px; border-radius:3px 3px 0 0; }
+div[data-testid="stTabs"] div[data-testid="stTabs"] button[role="tab"]{ border-radius:8px 8px 0 0; padding:.6rem .9rem; font-size:.88rem; }
+div[data-testid="stTabs"] div[data-testid="stTabs"] button[role="tab"][aria-selected="true"]{ background:transparent; color:var(--brand-d); box-shadow:none; }
+div[data-testid="stTabs"] div[data-testid="stTabs"] button[role="tab"][aria-selected="true"] p{ color:var(--brand-d); }
 
-/* ===== Tabs (sticky, pill-underline) ===== */
-div[data-testid="stTabs"] [role="tablist"]{
-  position:sticky; top:0; z-index:20; gap:.35rem; padding:.35rem .25rem 0;
-  background:rgba(246,248,252,.86); backdrop-filter:saturate(1.4) blur(8px);
-  border-bottom:1px solid var(--line); margin-bottom:1.25rem;
-}
-div[data-testid="stTabs"] button[role="tab"]{
-  height:auto; padding:.75rem 1.05rem; border-radius:var(--r-sm) var(--r-sm) 0 0;
-  background:transparent; color:var(--muted); font-size:.94rem; font-weight:550;
-  transition:color .15s, background .15s;
-}
-div[data-testid="stTabs"] button[role="tab"] p{ font-size:.94rem; font-weight:inherit; margin:0; }
-div[data-testid="stTabs"] button[role="tab"]:hover{ color:var(--navy-700); background:var(--blue-50); }
-div[data-testid="stTabs"] button[role="tab"][aria-selected="true"]{ color:var(--blue-600); font-weight:650; }
-div[data-testid="stTabs"] [data-baseweb="tab-highlight"]{ background:var(--blue-600); height:3px; border-radius:3px 3px 0 0; }
-div[data-testid="stTabs"] [data-baseweb="tab-border"]{ background:transparent; }
+/* ---------- Cards (keyed containers) ---------- */
+div[class*="st-key-card"]{ background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); box-shadow:var(--sh2); padding:1.05rem 1.15rem 1.15rem; }
+div[class*="st-key-card"] div[data-testid="stVerticalBlock"]{ gap:.65rem; }
+.sec-t{ font-size:1.02rem; font-weight:700; color:var(--ink); letter-spacing:-.01em; }
+.sec-s{ font-size:.83rem; color:var(--muted); margin-top:2px; line-height:1.5; }
+.grp{ display:flex; align-items:center; gap:.6rem; font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin:.35rem 0 .1rem; }
+.grp::after{ content:""; flex:1; height:1px; background:var(--line); }
+.hint{ background:var(--brand-ll); border:1px solid #DCE6FF; border-radius:12px; padding:.6rem .85rem; font-size:.86rem; color:var(--text); line-height:1.55; }
+.hint b{ color:var(--ink); }
 
-/* ===== Labels & help ===== */
-label[data-testid="stWidgetLabel"], div[data-testid="stWidgetLabel"]{ margin-bottom:.3rem; }
-label[data-testid="stWidgetLabel"] p, div[data-testid="stWidgetLabel"] p{
-  font-size:.83rem; font-weight:600; color:var(--navy-900); letter-spacing:.005em;
-}
-div[data-testid="stTooltipIcon"] svg{ color:var(--muted); }
-div[data-testid="stTooltipContent"]{
-  background:var(--navy-900); color:#fff; border-radius:var(--r-sm); font-size:.82rem; box-shadow:var(--sh-3);
-}
+/* ---------- Result hero card ---------- */
+.result{ display:flex; align-items:stretch; background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); box-shadow:var(--sh2); overflow:hidden; }
+.result-l{ min-width:170px; padding:.9rem 1.3rem; display:flex; flex-direction:column; justify-content:center; color:#fff; }
+.result.tone-ok .result-l{ background:linear-gradient(135deg,#0E9F8B,#12A594); }
+.result.tone-warn .result-l{ background:linear-gradient(135deg,#E8930C,#F5A524); }
+.result.tone-bad .result-l{ background:linear-gradient(135deg,#C92F3C,#DC3F4A); }
+.result-k{ font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; opacity:.92; }
+.result-v{ font-size:2.5rem; font-weight:800; letter-spacing:-.03em; line-height:1.05; margin-top:.15rem; }
+.result-r{ padding:.9rem 1.3rem; display:flex; flex-direction:column; justify-content:center; gap:.35rem; }
+.pill{ display:inline-flex; align-self:flex-start; align-items:center; gap:.4rem; font-size:.72rem; font-weight:750; text-transform:uppercase; letter-spacing:.08em; padding:.22rem .65rem; border-radius:99px; border:1px solid; }
+.pill::before{ content:""; width:7px; height:7px; border-radius:50%; background:currentColor; }
+.pill.tone-ok{ background:var(--ok-bg); color:var(--ok); border-color:var(--ok-line); }
+.pill.tone-warn{ background:var(--warn-bg); color:var(--warn); border-color:var(--warn-line); }
+.pill.tone-bad{ background:var(--bad-bg); color:var(--bad); border-color:var(--bad-line); }
+.result-ak{ font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.09em; color:var(--muted); margin-top:.15rem; }
+.result-a{ font-size:1.08rem; font-weight:700; color:var(--ink); letter-spacing:-.01em; }
 
-/* ===== Text / number inputs ===== */
-div[data-baseweb="input"], div[data-baseweb="base-input"], div[data-baseweb="textarea"],
-div[data-baseweb="select"] > div{
-  background:var(--surface) !important; border:1px solid var(--line-strong) !important;
-  border-radius:10px !important; box-shadow:var(--sh-1); transition:border-color .15s, box-shadow .15s;
-  min-height:42px;
-}
+/* ---------- KPI tiles ---------- */
+.kpi-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(175px,1fr)); gap:.7rem; }
+.kpi{ position:relative; overflow:hidden; background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:.8rem 1rem .85rem 1.1rem; box-shadow:var(--sh1); }
+.kpi::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--brand); }
+.kpi.tone-ok::before{ background:var(--ok-s); } .kpi.tone-warn::before{ background:var(--warn-s); } .kpi.tone-bad::before{ background:var(--bad-s); }
+.kpi-l{ font-size:.66rem; font-weight:700; text-transform:uppercase; letter-spacing:.09em; color:var(--muted); }
+.kpi-v{ font-size:1.5rem; font-weight:800; color:var(--ink); letter-spacing:-.02em; line-height:1.2; margin-top:.15rem; }
+.kpi-s{ font-size:.78rem; color:var(--muted); margin-top:.1rem; }
+
+/* ---------- Empty state ---------- */
+.empty{ text-align:center; padding:3rem 1.5rem; background:var(--surface); border:1.5px dashed var(--line-2); border-radius:var(--r-lg); }
+.empty-i{ width:56px; height:56px; margin:0 auto .9rem; border-radius:16px; background:var(--brand-l); display:flex; align-items:center; justify-content:center; }
+.empty-t{ font-size:1.05rem; font-weight:700; color:var(--ink); }
+.empty-s{ max-width:520px; margin:.35rem auto 0; font-size:.88rem; color:var(--muted); line-height:1.6; }
+.empty-c{ display:flex; gap:.5rem; justify-content:center; flex-wrap:wrap; margin-top:1rem; }
+.empty-c span{ font-size:.75rem; font-weight:600; color:var(--brand-d); background:var(--brand-l); padding:.28rem .7rem; border-radius:99px; }
+
+/* ---------- Info / fairness / sidebar blocks ---------- */
+.metric-card{ position:relative; overflow:hidden; background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:1rem 1.15rem; box-shadow:var(--sh2); height:100%; }
+.metric-card::before{ content:""; position:absolute; left:0; right:0; top:0; height:3px; background:linear-gradient(90deg,var(--brand),#8DA6FF); }
+.metric-card h4{ margin:.15rem 0 .35rem; font-size:.68rem; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); font-weight:700; }
+.metric-card p{ margin:.05rem 0; color:var(--text); font-size:.86rem; }
+.metric-card p strong{ color:var(--ink); font-size:1.5rem; font-weight:800; letter-spacing:-.02em; }
+.flow{ display:flex; flex-direction:column; gap:.5rem; }
+.flow-s{ display:flex; gap:.75rem; align-items:flex-start; padding:.65rem .8rem; border:1px solid var(--line); border-radius:12px; background:var(--surface); }
+.flow-n{ flex:none; width:26px; height:26px; border-radius:50%; background:var(--brand-l); color:var(--brand-d); font-weight:800; font-size:.78rem; display:flex; align-items:center; justify-content:center; }
+.flow-t{ font-weight:650; color:var(--ink); font-size:.9rem; } .flow-d{ font-size:.8rem; color:var(--muted); line-height:1.5; }
+.fair{ background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); box-shadow:var(--sh2); overflow:hidden; height:100%; }
+.fair-h{ padding:.7rem 1.1rem; font-size:.7rem; font-weight:750; text-transform:uppercase; letter-spacing:.1em; }
+.fair.bad .fair-h{ background:var(--bad-bg); color:var(--bad); } .fair.ok .fair-h{ background:var(--ok-bg); color:var(--ok); }
+.fair-b{ padding:.6rem 1.1rem 1rem; }
+.fair-d{ font-size:.84rem; color:var(--muted); line-height:1.55; margin:.2rem 0 .5rem; }
+.fair-r{ display:flex; justify-content:space-between; align-items:baseline; padding:.5rem 0; border-top:1px solid var(--line); font-size:.88rem; }
+.fair-r b{ color:var(--ink); font-size:1rem; }
+.fair-g{ display:flex; justify-content:space-between; align-items:baseline; padding:.65rem .8rem; margin-top:.4rem; border-radius:12px; font-weight:650; font-size:.88rem; }
+.fair.bad .fair-g{ background:var(--bad-bg); color:var(--bad); } .fair.ok .fair-g{ background:var(--ok-bg); color:var(--ok); }
+.fair-g b{ font-size:1.35rem; font-weight:800; }
+section[data-testid="stSidebar"]{ background:var(--surface); border-right:1px solid var(--line); }
+section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"]{ padding:1rem 1rem 2rem; }
+.side-t{ font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin:1rem 0 .5rem; }
+.side-t:first-child{ margin-top:.2rem; }
+.lg{ display:flex; align-items:center; justify-content:space-between; padding:.5rem .7rem; border:1px solid var(--line); border-radius:10px; margin-bottom:.35rem; font-size:.85rem; color:var(--ink); font-weight:600; }
+.lg span{ font-weight:500; color:var(--muted); font-size:.8rem; }
+.lg i{ display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:.5rem; }
+.side-box{ background:var(--brand-ll); border:1px solid #DCE6FF; border-radius:12px; padding:.65rem .8rem; font-size:.82rem; color:var(--text); line-height:1.55; }
+.side-box b{ color:var(--ink); }
+
+/* ---------- Form controls ---------- */
+label[data-testid="stWidgetLabel"] p, div[data-testid="stWidgetLabel"] p{ font-size:.8rem; font-weight:600; color:var(--ink); }
+div[data-testid="stTooltipContent"]{ background:var(--ink); color:#fff; border-radius:8px; font-size:.8rem; box-shadow:var(--sh3); }
+div[data-baseweb="input"], div[data-baseweb="base-input"], div[data-baseweb="textarea"], div[data-baseweb="select"] > div{
+  background:var(--surface) !important; border:1px solid var(--line-2) !important; border-radius:10px !important; box-shadow:var(--sh1); min-height:40px; transition:border-color .15s, box-shadow .15s; }
 div[data-baseweb="input"]:hover, div[data-baseweb="select"] > div:hover{ border-color:#9FB1CE !important; }
-div[data-baseweb="input"]:focus-within, div[data-baseweb="textarea"]:focus-within,
-div[data-baseweb="select"] > div:focus-within{
-  border-color:var(--blue-500) !important; box-shadow:var(--ring) !important;
-}
-div[data-baseweb="input"] input, div[data-baseweb="select"] input, textarea{
-  color:var(--navy-900) !important; font-size:.94rem; font-weight:500;
-  -webkit-text-fill-color:var(--navy-900);
-}
+div[data-baseweb="input"]:focus-within, div[data-baseweb="select"] > div:focus-within{ border-color:var(--brand) !important; box-shadow:var(--ring) !important; }
+div[data-baseweb="input"] input, div[data-baseweb="select"] input, textarea{ color:var(--ink) !important; -webkit-text-fill-color:var(--ink); font-size:.9rem; font-weight:500; }
 div[data-testid="stNumberInput"] div[data-baseweb="input"]{ overflow:hidden; }
-div[data-testid="stNumberInput"] button{
-  background:var(--blue-50) !important; color:var(--navy-700) !important; border:0 !important;
-  border-left:1px solid var(--line) !important; transition:background .15s;
-}
-div[data-testid="stNumberInput"] button:hover{ background:var(--blue-100) !important; color:var(--blue-600) !important; }
-
-/* ===== Select / dropdown menu (portal) ===== */
+div[data-testid="stNumberInput"] button{ background:var(--brand-ll) !important; color:var(--brand-d) !important; border:0 !important; border-left:1px solid var(--line) !important; }
+div[data-testid="stNumberInput"] button:hover{ background:var(--brand-l) !important; }
 div[data-baseweb="select"] svg{ color:var(--muted); }
-div[data-baseweb="select"] [data-baseweb="tag"], span[data-baseweb="tag"]{
-  background:var(--blue-100) !important; color:var(--navy-700) !important;
-  border-radius:6px !important; font-weight:600; font-size:.8rem;
-}
-div[data-baseweb="popover"] > div{
-  background:var(--surface) !important; border:1px solid var(--line) !important;
-  border-radius:var(--r-md) !important; box-shadow:var(--sh-3) !important; overflow:hidden;
-}
-div[data-baseweb="popover"] ul, ul[role="listbox"]{ background:var(--surface) !important; padding:.35rem !important; }
-div[data-baseweb="popover"] li, li[role="option"]{
-  border-radius:8px !important; margin:1px 0; padding:.55rem .75rem !important;
-  color:var(--ink) !important; font-size:.92rem; font-weight:500; background:transparent !important;
-}
-div[data-baseweb="popover"] li:hover, li[role="option"]:hover,
-li[role="option"][aria-selected="true"]{ background:var(--blue-50) !important; color:var(--blue-600) !important; }
-li[role="option"][aria-selected="true"]{ font-weight:650; background:var(--blue-100) !important; }
+span[data-baseweb="tag"]{ background:var(--brand-l) !important; color:var(--brand-d) !important; border-radius:6px !important; font-weight:600; }
+div[data-baseweb="popover"] > div{ background:var(--surface) !important; border:1px solid var(--line) !important; border-radius:12px !important; box-shadow:var(--sh3) !important; overflow:hidden; }
+div[data-baseweb="popover"] ul, ul[role="listbox"]{ background:var(--surface) !important; padding:.3rem !important; }
+div[data-baseweb="popover"] li, li[role="option"]{ border-radius:8px !important; margin:1px 0; padding:.5rem .7rem !important; color:var(--ink) !important; font-size:.9rem; font-weight:500; background:transparent !important; }
+div[data-baseweb="popover"] li:hover, li[role="option"]:hover{ background:var(--brand-ll) !important; color:var(--brand-d) !important; }
+li[role="option"][aria-selected="true"]{ background:var(--brand-l) !important; color:var(--brand-d) !important; font-weight:650; }
+div[data-testid="stSlider"]{ padding:0 .3rem .1rem; }
+div[data-testid="stSlider"] [role="slider"]{ background:var(--brand) !important; border:3px solid #fff !important; box-shadow:0 0 0 1px var(--brand), var(--sh2) !important; height:1.1rem; width:1.1rem; }
+div[data-testid="stSliderThumbValue"]{ color:var(--brand-d) !important; font-weight:700; font-size:.82rem; }
+div[data-testid="stSliderTickBarMin"], div[data-testid="stSliderTickBarMax"]{ color:var(--muted); font-size:.72rem; }
+input[type="checkbox"], input[type="radio"]{ accent-color:var(--brand); }
 
-/* ===== Radio (card rows) & checkbox / toggle ===== */
-div[role="radiogroup"]{ gap:.4rem; }
-div[role="radiogroup"] > label{
-  background:var(--surface); border:1px solid var(--line); border-radius:10px;
-  padding:.55rem .8rem; margin:0; transition:all .15s; cursor:pointer;
-}
-div[role="radiogroup"] > label:hover{ border-color:#9FB1CE; background:var(--blue-50); }
-div[role="radiogroup"] > label:has(input:checked){
-  border-color:var(--blue-500); background:var(--blue-50); box-shadow:inset 0 0 0 1px var(--blue-500);
-}
-div[role="radiogroup"] > label p{ font-size:.9rem; font-weight:550; color:var(--ink); margin:0; }
-div[data-testid="stCheckbox"] label, div[data-testid="stToggle"] label{ gap:.55rem; }
-div[data-testid="stCheckbox"] p, div[data-testid="stToggle"] p{ font-size:.9rem; color:var(--ink); font-weight:500; }
-input[type="checkbox"], input[type="radio"]{ accent-color:var(--blue-600); }
-
-/* ===== Slider ===== */
-div[data-testid="stSlider"]{ padding:.25rem .25rem .5rem; }
-div[data-testid="stSlider"] [role="slider"]{
-  background:var(--blue-600) !important; border:3px solid #fff !important;
-  box-shadow:0 0 0 1px var(--blue-600), var(--sh-2) !important; height:1.15rem; width:1.15rem;
-}
-div[data-testid="stSlider"] [role="slider"]:focus{ box-shadow:0 0 0 1px var(--blue-600), var(--ring) !important; }
-div[data-testid="stSliderThumbValue"]{ color:var(--blue-600) !important; font-weight:700; font-size:.85rem; }
-div[data-testid="stSliderTickBarMin"], div[data-testid="stSliderTickBarMax"]{ color:var(--muted); font-size:.75rem; }
-
-/* ===== Buttons ===== */
-.stButton > button, .stDownloadButton > button, .stFormSubmitButton > button, a[data-testid="stLinkButton"]{
-  min-height:44px; padding:.6rem 1.15rem; border-radius:10px; font-weight:600; font-size:.93rem;
-  background:var(--surface); color:var(--navy-700); border:1px solid var(--line-strong);
-  box-shadow:var(--sh-1); transition:transform .12s, box-shadow .15s, background .15s, border-color .15s;
-}
-.stButton > button p, .stDownloadButton > button p{ font-weight:600; font-size:.93rem; margin:0; }
-.stButton > button:hover, .stDownloadButton > button:hover{
-  background:var(--blue-50); border-color:var(--blue-500); color:var(--blue-600); box-shadow:var(--sh-2);
-}
-.stButton > button:active, .stDownloadButton > button:active{ transform:translateY(1px); box-shadow:var(--sh-1); }
-.stButton > button:focus-visible, .stDownloadButton > button:focus-visible,
-button[role="tab"]:focus-visible, summary:focus-visible{ outline:none; box-shadow:var(--ring); }
-.stButton > button[kind="primary"], .stButton > button[data-testid="stBaseButton-primary"],
-.stFormSubmitButton > button[kind="primary"]{
-  background:linear-gradient(180deg,var(--blue-500),var(--blue-600)); color:#fff; border-color:var(--blue-600);
-  box-shadow:0 1px 2px rgba(29,78,216,.35), 0 6px 14px rgba(29,78,216,.22);
-}
+/* ---------- Buttons ---------- */
+.stButton > button, .stDownloadButton > button, .stFormSubmitButton > button{
+  min-height:42px; padding:.5rem 1.05rem; border-radius:11px; font-weight:650; font-size:.9rem; background:var(--surface); color:var(--brand-d);
+  border:1px solid var(--line-2); box-shadow:var(--sh1); transition:transform .12s, box-shadow .15s, background .15s, border-color .15s; }
+.stButton > button p, .stDownloadButton > button p{ font-weight:650; font-size:.9rem; margin:0; }
+.stButton > button:hover, .stDownloadButton > button:hover{ background:var(--brand-ll); border-color:var(--brand); color:var(--brand-d); box-shadow:var(--sh2); }
+.stButton > button:active, .stDownloadButton > button:active{ transform:translateY(1px); }
+.stButton > button:focus-visible, .stDownloadButton > button:focus-visible, button[role="tab"]:focus-visible, summary:focus-visible{ outline:none; box-shadow:var(--ring); }
+.stButton > button[kind="primary"], .stButton > button[data-testid="stBaseButton-primary"]{
+  background:linear-gradient(180deg,#4A6BE8,#3B5BDB); color:#fff; border-color:#3554C9; box-shadow:0 1px 2px rgba(43,68,184,.4), 0 8px 18px rgba(59,91,219,.28); }
 .stButton > button[kind="primary"] p, .stButton > button[data-testid="stBaseButton-primary"] p{ color:#fff; }
-.stButton > button[kind="primary"]:hover, .stButton > button[data-testid="stBaseButton-primary"]:hover{
-  background:linear-gradient(180deg,#3B72F0,#1E4FD0); color:#fff; border-color:var(--blue-600);
-}
-.stDownloadButton > button{ justify-content:center; }
-.stDownloadButton > button::before{ content:"\2193"; margin-right:.5rem; font-weight:700; color:var(--blue-600); }
+.stButton > button[kind="primary"]:hover, .stButton > button[data-testid="stBaseButton-primary"]:hover{ background:linear-gradient(180deg,#5776F0,#3F60E2); color:#fff; border-color:#3554C9; }
 
-/* ===== File uploader ===== */
-div[data-testid="stFileUploader"] section{
-  background:var(--surface); border:1.5px dashed #A9B9D6; border-radius:var(--r-lg);
-  padding:1.4rem; transition:all .15s;
-}
-div[data-testid="stFileUploader"] section:hover{ border-color:var(--blue-500); background:var(--blue-50); }
-div[data-testid="stFileUploader"] section button{ border-radius:8px; }
+/* ---------- Uploader / expander / charts / tables / alerts ---------- */
+div[data-testid="stFileUploader"] section{ background:var(--surface); border:1.5px dashed #A9B9D6; border-radius:var(--r-lg); padding:1.2rem; transition:all .15s; }
+div[data-testid="stFileUploader"] section:hover{ border-color:var(--brand); background:var(--brand-ll); }
 div[data-testid="stFileUploader"] small{ color:var(--muted); }
-div[data-testid="stFileUploaderFile"]{ border-radius:10px; background:var(--blue-50); padding:.4rem .6rem; }
-
-/* ===== Metrics ===== */
-div[data-testid="stMetric"]{
-  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md);
-  padding:1.05rem 1.2rem; box-shadow:var(--sh-2); position:relative; overflow:hidden;
-}
-div[data-testid="stMetric"]::before{
-  content:""; position:absolute; left:0; top:0; bottom:0; width:4px;
-  background:linear-gradient(180deg,var(--blue-500),#7FA6FF);
-}
-div[data-testid="stMetricLabel"] p{
-  font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted);
-}
-div[data-testid="stMetricValue"]{ color:var(--navy-900); font-weight:750; font-size:1.75rem; letter-spacing:-.02em; }
-div[data-testid="stMetricDelta"]{ font-weight:600; font-size:.82rem; }
-
-/* ===== Containers with border, expanders, forms ===== */
-div[data-testid="stVerticalBlockBorderWrapper"]:has(> div > div[data-testid="stVerticalBlock"]):not(:has(div[data-testid="stVerticalBlockBorderWrapper"])){
-  border-radius:var(--r-md);
-}
-div[data-testid="stVerticalBlockBorderWrapper"][class*="border"], div[data-testid="stForm"]{
-  background:var(--surface); border:1px solid var(--line) !important; border-radius:var(--r-md) !important;
-  box-shadow:var(--sh-2);
-}
-div[data-testid="stExpander"]{
-  background:var(--surface); border:1px solid var(--line) !important; border-radius:var(--r-md) !important;
-  box-shadow:var(--sh-2); margin-bottom:.8rem; overflow:hidden;
-}
+div[data-testid="stFileUploaderFile"]{ background:var(--brand-ll); border-radius:10px; }
+div[data-testid="stExpander"]{ background:var(--surface); border:1px solid var(--line) !important; border-radius:var(--r) !important; box-shadow:var(--sh1); overflow:hidden; }
 div[data-testid="stExpander"] details{ border:0 !important; }
-div[data-testid="stExpander"] summary{
-  padding:.95rem 1.2rem; font-weight:650; color:var(--navy-900); transition:background .15s;
-}
-div[data-testid="stExpander"] summary:hover{ background:var(--blue-50); }
-div[data-testid="stExpander"] summary p{ font-size:.98rem; font-weight:650; margin:0; }
-div[data-testid="stExpander"] details[open] > summary{ border-bottom:1px solid var(--line); }
-div[data-testid="stExpanderDetails"], div[data-testid="stExpander"] details > div:last-child{ padding:1rem 1.2rem 1.2rem; }
-
-/* ===== Charts, tables, alerts ===== */
-div[data-testid="stPlotlyChart"]{
-  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md);
-  padding:.6rem .6rem .2rem; box-shadow:var(--sh-2);
-}
-div[data-testid="stDataFrame"], div[data-testid="stTable"]{
-  border:1px solid var(--line); border-radius:var(--r-md); overflow:hidden; box-shadow:var(--sh-2);
-}
-div[data-testid="stAlert"]{ border-radius:var(--r-md); border:1px solid var(--line); box-shadow:var(--sh-1); }
-div[data-testid="stAlert"] p{ font-size:.92rem; }
+div[data-testid="stExpander"] summary{ padding:.7rem 1rem; font-weight:650; color:var(--ink); }
+div[data-testid="stExpander"] summary:hover{ background:var(--brand-ll); }
+div[data-testid="stExpander"] summary p{ font-size:.92rem; font-weight:650; margin:0; }
+div[data-testid="stPlotlyChart"]{ background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:.4rem .5rem .1rem; box-shadow:var(--sh1); }
+div[data-testid="stDataFrame"], div[data-testid="stTable"]{ border:1px solid var(--line); border-radius:var(--r); overflow:hidden; box-shadow:var(--sh1); }
+div[data-testid="stAlert"]{ border-radius:var(--r); border:1px solid var(--line); }
+div[data-testid="stCaptionContainer"], .stCaption{ color:var(--muted); font-size:.8rem; }
 div[data-testid="stSpinner"] p{ color:var(--muted); font-weight:500; }
-div[data-testid="stCaptionContainer"], .stCaption{ color:var(--muted); font-size:.82rem; }
-.stMarkdown table{ border-collapse:separate; border-spacing:0; width:100%; border:1px solid var(--line); border-radius:var(--r-md); overflow:hidden; }
-.stMarkdown th{ background:var(--blue-50); color:var(--navy-900); font-size:.8rem; text-transform:uppercase; letter-spacing:.05em; padding:.6rem .8rem; text-align:left; }
-.stMarkdown td{ padding:.6rem .8rem; border-top:1px solid var(--line); font-size:.9rem; }
-.stMarkdown code{ background:var(--blue-50); color:var(--navy-700); border-radius:6px; padding:.1rem .4rem; font-size:.85em; }
+.stMarkdown code{ background:var(--brand-l); color:var(--brand-d); border-radius:6px; padding:.1rem .4rem; font-size:.85em; }
+div[data-testid="stCode"] pre, pre{ background:#0E1B3D !important; color:#E6EDFF !important; border-radius:12px; font-size:.85rem; }
+.delta-good{ color:var(--ok); font-weight:700; } .delta-bad{ color:var(--bad); font-weight:700; } .delta-flat{ color:var(--muted); font-weight:700; }
 
-/* ===== Risk tier banners ===== */
-.tier-low, .tier-med, .tier-high{
-  position:relative; padding:1.15rem 1.4rem 1.1rem 1.6rem; border-radius:var(--r-md);
-  border:1px solid; box-shadow:var(--sh-2); margin:.5rem 0 1.1rem;
-}
-.tier-low::before, .tier-med::before, .tier-high::before{
-  content:""; position:absolute; left:0; top:0; bottom:0; width:6px; border-radius:var(--r-md) 0 0 var(--r-md);
-}
-.tier-low h3, .tier-med h3, .tier-high h3{
-  font-size:.72rem !important; text-transform:uppercase; letter-spacing:.1em; font-weight:750;
-  margin:0 0 .55rem !important; color:inherit !important;
-}
-.tier-low p, .tier-med p, .tier-high p{ margin:.2rem 0; color:var(--ink); font-size:.96rem; }
-.tier-low { background:var(--ok-bg);   border-color:var(--ok-line);   color:var(--ok); }
-.tier-med { background:var(--warn-bg); border-color:var(--warn-line); color:var(--warn); }
-.tier-high{ background:var(--bad-bg);  border-color:var(--bad-line);  color:var(--bad); }
-.tier-low::before{ background:#12B5A0; } .tier-med::before{ background:#F0A30A; } .tier-high::before{ background:#E5484D; }
-
-/* ===== Cards & explanation panels ===== */
-.metric-card{
-  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md);
-  padding:1.15rem 1.3rem; box-shadow:var(--sh-2); height:100%; position:relative; overflow:hidden;
-  transition:transform .15s, box-shadow .15s;
-}
-.metric-card::before{ content:""; position:absolute; left:0; right:0; top:0; height:3px;
-  background:linear-gradient(90deg,var(--blue-600),#7FA6FF); }
-.metric-card:hover{ transform:translateY(-2px); box-shadow:var(--sh-3); }
-.metric-card h4{ margin:.2rem 0 .45rem; font-size:.72rem; text-transform:uppercase; letter-spacing:.09em; color:var(--muted); font-weight:700; }
-.metric-card p{ margin:.1rem 0; color:var(--text); font-size:.9rem; }
-.metric-card p strong{ color:var(--navy-900); font-size:1.55rem; font-weight:750; letter-spacing:-.02em; }
-
-.explain-box{
-  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md);
-  padding:1.05rem 1.3rem; margin:.2rem 0 1rem; color:var(--text); font-size:.94rem; line-height:1.65;
-  box-shadow:var(--sh-1);
-}
-.explain-box h4{ margin:0 0 .5rem; color:var(--navy-900); font-size:1rem; font-weight:650; display:flex; align-items:center; gap:.55rem; }
-
-/* ===== Chips, badges, deltas ===== */
-.factor-chip{ display:inline-flex; align-items:center; padding:.3rem .8rem; margin:.2rem .35rem .2rem 0;
-  border-radius:99px; font-size:.82rem; font-weight:650; border:1px solid transparent; }
-.chip-risk{ background:var(--bad-bg); color:var(--bad); border-color:var(--bad-line); }
-.chip-prot{ background:var(--ok-bg);  color:var(--ok);  border-color:var(--ok-line); }
-.step-badge{ display:inline-flex; align-items:center; justify-content:center; min-width:1.7rem; height:1.7rem;
-  padding:0 .45rem; border-radius:99px; background:var(--blue-600); color:#fff; font-weight:700; font-size:.8rem;
-  box-shadow:0 2px 6px rgba(29,78,216,.35); }
-.delta-good{ color:var(--ok);  font-weight:700; }
-.delta-bad { color:var(--bad); font-weight:700; }
-.delta-flat{ color:var(--muted); font-weight:700; }
-
-/* ===== Responsive & motion ===== */
 @media (max-width:900px){
-  .block-container{ padding:1.4rem 1rem 3.5rem; }
-  .main-header{ font-size:1.6rem; }
-  div[data-testid="stTabs"] button[role="tab"]{ padding:.65rem .75rem; }
+  .block-container{ padding:2.4rem .9rem 3rem; }
+  .result{ flex-direction:column; } .result-l{ min-width:0; }
+  button[role="tab"]{ padding:.5rem .7rem; font-size:.82rem; }
 }
 @media (prefers-reduced-motion:reduce){ *{ animation:none !important; transition:none !important; } }
-@media print{ section[data-testid="stSidebar"], header{ display:none !important; } }
 </style>
 """,
     unsafe_allow_html=True,
 )
 
-# ---------- JS enhancer (safe: wrapped in try/catch, no effect on app logic) ----------
 components.html(
     """
 <script>
 (function () {
   try {
     const doc = window.parent.document;
-    if (doc.getElementById("campus-font")) return;
-
-    const link = doc.createElement("link");
-    link.id = "campus-font";
-    link.rel = "stylesheet";
+    if (doc.getElementById("campus-enhancer")) return;
+    const mark = doc.createElement("meta"); mark.id = "campus-enhancer"; mark.name = "theme-color"; mark.content = "#3B5BDB";
+    doc.head.appendChild(mark);
+    const link = doc.createElement("link"); link.rel = "stylesheet";
     link.href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap";
     doc.head.appendChild(link);
-
-    const meta = doc.createElement("meta");
-    meta.name = "theme-color"; meta.content = "#1D4ED8";
-    doc.head.appendChild(meta);
     doc.documentElement.setAttribute("lang", "en");
 
-    // Accessibility: label icon-only controls and give tabs/metrics sensible roles
+    const BRAND = "rgb(59, 91, 219)";
+    const isRed = s => /rgb\(255,\s*75,\s*75\)|#ff4b4b/i.test(s);
+    const fixRed = s => s.replace(/rgb\(255,\s*75,\s*75\)|#ff4b4b/gi, BRAND);
     const enhance = () => {
+      doc.querySelectorAll('[data-baseweb="slider"] *').forEach(el => {
+        const s = el.getAttribute("style");
+        if (s && isRed(s)) el.setAttribute("style", fixRed(s));
+      });
       doc.querySelectorAll('button[data-testid="stSidebarCollapseButton"], [data-testid="stSidebarCollapsedControl"] button')
         .forEach(b => { if (!b.getAttribute("aria-label")) b.setAttribute("aria-label", "Toggle sidebar"); });
-      doc.querySelectorAll('div[data-testid="stMetric"]').forEach(m => m.setAttribute("role", "group"));
       doc.querySelectorAll('div[data-testid="stPlotlyChart"]').forEach(c => {
         if (!c.getAttribute("aria-label")) c.setAttribute("aria-label", "Interactive chart");
       });
     };
     enhance();
     let t = null;
-    new MutationObserver(() => { clearTimeout(t); t = setTimeout(enhance, 150); })
-      .observe(doc.body, { childList: true, subtree: true });
-  } catch (e) { /* fail silently: theme still works via CSS */ }
+    new MutationObserver(() => { clearTimeout(t); t = setTimeout(enhance, 80); })
+      .observe(doc.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["style"] });
+  } catch (e) { /* CSS still works if this fails */ }
 })();
 </script>
 """,
     height=0,
 )
+
 
 # ==========================================================
 # MODEL AND DATA CACHING
@@ -561,11 +443,11 @@ def friendly_name(feature: str) -> str:
 # ==========================================================
 def plot_gauge(probability, band):
     color = (
-        "#2A9D8F"
+        "#12A594"
         if band == "Low Risk"
-        else "#E9C46A"
+        else "#F5A524"
         if band == "Medium Risk"
-        else "#E63946"
+        else "#DC3F4A"
     )
     fig = go.Figure(
         go.Indicator(
@@ -574,15 +456,15 @@ def plot_gauge(probability, band):
             number={"suffix": "%", "font": {"size": 40, "color": color, "weight": "bold"}},
             domain={"x": [0, 1], "y": [0, 1]},
             gauge={
-                "axis": {"range": [0, 100], "tickwidth": 1, "tickcolor": "darkblue"},
+                "axis": {"range": [0, 100], "tickwidth": 1, "tickcolor": "#94A3B8"},
                 "bar": {"color": color},
                 "bgcolor": "white",
                 "borderwidth": 2,
                 "bordercolor": "gray",
                 "steps": [
-                    {"range": [0, 20], "color": "rgba(42, 157, 143, 0.15)"},
-                    {"range": [20, 50], "color": "rgba(233, 196, 106, 0.15)"},
-                    {"range": [50, 100], "color": "rgba(230, 57, 70, 0.15)"},
+                    {"range": [0, 20], "color": "rgba(18, 165, 148, 0.15)"},
+                    {"range": [20, 50], "color": "rgba(245, 165, 36, 0.15)"},
+                    {"range": [50, 100], "color": "rgba(220, 63, 74, 0.15)"},
                 ],
                 "threshold": {"line": {"color": "black", "width": 3}, "thickness": 0.75, "value": probability * 100},
             },
@@ -596,7 +478,7 @@ def plot_shap_waterfall(feature_names, shap_values, top_n=6):
     idx = np.argsort(np.abs(shap_values))[-top_n:]
     names = [friendly_name(feature_names[i]) for i in idx]
     vals = shap_values[idx]
-    colors_list = ["#E63946" if v > 0 else "#2A9D8F" for v in vals]
+    colors_list = ["#DC3F4A" if v > 0 else "#12A594" for v in vals]
     fig = go.Figure(
         go.Bar(
             x=vals,
@@ -616,7 +498,7 @@ def plot_shap_waterfall(feature_names, shap_values, top_n=6):
         margin=dict(l=10, r=40, t=50, b=20),
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)",
-        xaxis=dict(showgrid=True, gridcolor="#e5e7eb", zeroline=True, zerolinecolor="#1D3557", zerolinewidth=2),
+        xaxis=dict(showgrid=True, gridcolor="#e5e7eb", zeroline=True, zerolinecolor="#1B2A5C", zerolinewidth=2),
     )
     return fig
 
@@ -629,7 +511,7 @@ def plot_contribution_donut(shap_values):
             labels=["Risk-Increasing Factors", "Risk-Reducing Factors"],
             values=[pos, neg],
             hole=0.65,
-            marker_colors=["#E63946", "#2A9D8F"],
+            marker_colors=["#DC3F4A", "#12A594"],
             textinfo="label+percent",
             hovertemplate="<b>%{label}</b><br>Total Impact: %{value:.3f}<extra></extra>",
         )
@@ -647,18 +529,18 @@ def plot_contribution_donut(shap_values):
 
 def plot_threshold_explorer(probability):
     fig = go.Figure()
-    fig.add_trace(go.Bar(x=[LOW_TH], y=["Risk Band"], orientation="h", marker_color="rgba(42, 157, 143, 0.55)", name="Low Risk (< 0.20)", hovertemplate="Low Risk<br>0.00 - 0.20<extra></extra>"))
-    fig.add_trace(go.Bar(x=[HIGH_TH - LOW_TH], y=["Risk Band"], orientation="h", marker_color="rgba(233, 196, 106, 0.6)", name="Medium Risk (0.20 - 0.50)", hovertemplate="Medium Risk<br>0.20 - 0.50<extra></extra>"))
-    fig.add_trace(go.Bar(x=[1.0 - HIGH_TH], y=["Risk Band"], orientation="h", marker_color="rgba(230, 57, 70, 0.6)", name="High Risk (>= 0.50)", hovertemplate="High Risk<br>0.50 - 1.00<extra></extra>"))
+    fig.add_trace(go.Bar(x=[LOW_TH], y=["Risk Band"], orientation="h", marker_color="rgba(18, 165, 148, 0.55)", name="Low Risk (< 0.20)", hovertemplate="Low Risk<br>0.00 - 0.20<extra></extra>"))
+    fig.add_trace(go.Bar(x=[HIGH_TH - LOW_TH], y=["Risk Band"], orientation="h", marker_color="rgba(245, 165, 36, 0.6)", name="Medium Risk (0.20 - 0.50)", hovertemplate="Medium Risk<br>0.20 - 0.50<extra></extra>"))
+    fig.add_trace(go.Bar(x=[1.0 - HIGH_TH], y=["Risk Band"], orientation="h", marker_color="rgba(220, 63, 74, 0.6)", name="High Risk (>= 0.50)", hovertemplate="High Risk<br>0.50 - 1.00<extra></extra>"))
     fig.add_trace(
         go.Scatter(
             x=[probability],
             y=["Risk Band"],
             mode="markers+text",
-            marker=dict(size=22, color="#1D3557", symbol="line-ns", line=dict(width=3, color="white")),
+            marker=dict(size=22, color="#1B2A5C", symbol="line-ns", line=dict(width=3, color="white")),
             text=[f"  This student: {probability:.1%}"],
             textposition="top center",
-            textfont=dict(size=13, color="#1D3557"),
+            textfont=dict(size=13, color="#1B2A5C"),
             name="Student",
             hovertemplate="Student Probability: %{x:.3f}<extra></extra>",
         )
@@ -689,8 +571,8 @@ def plot_radar_profile(user_input, medians, top_features):
         student_vals.append(student_norm)
         cohort_vals.append(1.0)
     fig = go.Figure()
-    fig.add_trace(go.Scatterpolar(r=student_vals, theta=labels, fill="toself", name="This Student", line_color="#1D3557", fillcolor="rgba(29, 53, 87, 0.25)"))
-    fig.add_trace(go.Scatterpolar(r=cohort_vals, theta=labels, fill="toself", name="Cohort Median", line_color="#E9C46A", fillcolor="rgba(233, 196, 106, 0.15)"))
+    fig.add_trace(go.Scatterpolar(r=student_vals, theta=labels, fill="toself", name="This Student", line_color="#1B2A5C", fillcolor="rgba(27, 42, 92, 0.25)"))
+    fig.add_trace(go.Scatterpolar(r=cohort_vals, theta=labels, fill="toself", name="Cohort Median", line_color="#F5A524", fillcolor="rgba(245, 165, 36, 0.15)"))
     fig.update_layout(
         title="Student Profile vs Cohort Median",
         polar=dict(radialaxis=dict(visible=True, range=[0, 1])),
@@ -723,12 +605,12 @@ def plot_counterfactual_curve(base_input, feature, current_value, model, medians
         probs.append(float(model.predict_proba(x)[:, 1]))
     probs = np.array(probs)
     fig = go.Figure()
-    fig.add_hrect(y0=0, y1=LOW_TH, fillcolor="rgba(42, 157, 143, 0.10)", line_width=0)
-    fig.add_hrect(y0=LOW_TH, y1=HIGH_TH, fillcolor="rgba(233, 196, 106, 0.12)", line_width=0)
-    fig.add_hrect(y0=HIGH_TH, y1=1.0, fillcolor="rgba(230, 57, 70, 0.10)", line_width=0)
-    fig.add_trace(go.Scatter(x=sweep, y=probs, mode="lines", line=dict(color="#1D3557", width=3), name="Predicted probability", hovertemplate=f"{friendly_name(feature)}: %{{x}}<br>Probability: %{{y:.1%}}<extra></extra>"))
+    fig.add_hrect(y0=0, y1=LOW_TH, fillcolor="rgba(18, 165, 148, 0.10)", line_width=0)
+    fig.add_hrect(y0=LOW_TH, y1=HIGH_TH, fillcolor="rgba(245, 165, 36, 0.12)", line_width=0)
+    fig.add_hrect(y0=HIGH_TH, y1=1.0, fillcolor="rgba(220, 63, 74, 0.10)", line_width=0)
+    fig.add_trace(go.Scatter(x=sweep, y=probs, mode="lines", line=dict(color="#1B2A5C", width=3), name="Predicted probability", hovertemplate=f"{friendly_name(feature)}: %{{x}}<br>Probability: %{{y:.1%}}<extra></extra>"))
     cur_prob = float(model.predict_proba(pd.DataFrame([{f: base_input.get(f, float(medians[f])) for f in feature_cols}]))[:, 1])
-    fig.add_trace(go.Scatter(x=[current_value], y=[cur_prob], mode="markers", marker=dict(size=16, color="#E63946", line=dict(width=2, color="white")), name="Current value", hovertemplate=f"Current: {current_value}<br>Probability: {cur_prob:.1%}<extra></extra>"))
+    fig.add_trace(go.Scatter(x=[current_value], y=[cur_prob], mode="markers", marker=dict(size=16, color="#DC3F4A", line=dict(width=2, color="white")), name="Current value", hovertemplate=f"Current: {current_value}<br>Probability: {cur_prob:.1%}<extra></extra>"))
     fig.update_layout(
         title=f"Counterfactual Sweep: {friendly_name(feature)}",
         xaxis_title=friendly_name(feature),
@@ -751,11 +633,11 @@ def plot_capacity_curve(probs_sorted):
     y = cumulative_captured / total_risk if total_risk > 0 else np.zeros_like(k)
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=[0, n], y=[0, 1], mode="lines", line=dict(color="#ADB5BD", width=2, dash="dash"), name="Random selection baseline", hoverinfo="skip"))
-    fig.add_trace(go.Scatter(x=k, y=y, mode="lines", line=dict(color="#1D3557", width=3), name="Model-ranked selection", hovertemplate="Intervened: %{x}<br>Risk captured: %{y:.1%}<extra></extra>"))
+    fig.add_trace(go.Scatter(x=k, y=y, mode="lines", line=dict(color="#1B2A5C", width=3), name="Model-ranked selection", hovertemplate="Intervened: %{x}<br>Risk captured: %{y:.1%}<extra></extra>"))
     cap = min(CAPACITY_LIMIT, n)
     y_cap = y[cap - 1] if cap > 0 else 0.0
-    fig.add_vline(x=cap, line=dict(color="#E63946", width=2, dash="dash"), annotation_text=f"Capacity C={CAPACITY_LIMIT}", annotation_position="top", annotation_font_color="#E63946")
-    fig.add_trace(go.Scatter(x=[cap], y=[y_cap], mode="markers+text", marker=dict(size=14, color="#E63946", line=dict(width=2, color="white")), text=[f"Risk captured at capacity: {y_cap:.1%}"], textposition="bottom right", textfont=dict(size=12, color="#E63946"), name="At capacity", hovertemplate=f"Top {cap} students<br>Risk captured: {y_cap:.1%}<extra></extra>"))
+    fig.add_vline(x=cap, line=dict(color="#DC3F4A", width=2, dash="dash"), annotation_text=f"Capacity C={CAPACITY_LIMIT}", annotation_position="top", annotation_font_color="#DC3F4A")
+    fig.add_trace(go.Scatter(x=[cap], y=[y_cap], mode="markers+text", marker=dict(size=14, color="#DC3F4A", line=dict(width=2, color="white")), text=[f"Risk captured at capacity: {y_cap:.1%}"], textposition="bottom right", textfont=dict(size=12, color="#DC3F4A"), name="At capacity", hovertemplate=f"Top {cap} students<br>Risk captured: {y_cap:.1%}<extra></extra>"))
     random_at_cap = cap / n if n > 0 else 0.0
     fig.add_trace(go.Scatter(x=[cap], y=[random_at_cap], mode="markers+text", marker=dict(size=12, color="#6C757D", line=dict(width=2, color="white")), text=[f"Random at capacity: {random_at_cap:.1%}"], textposition="top left", textfont=dict(size=11, color="#6C757D"), name="Random at capacity", hovertemplate=f"Top {cap} by chance<br>Risk captured: {random_at_cap:.1%}<extra></extra>"))
     fig.update_layout(
@@ -774,7 +656,7 @@ def plot_capacity_curve(probs_sorted):
 
 def plot_batch_band_distribution(bands):
     counts = pd.Series(bands).value_counts().reindex(["Low Risk", "Medium Risk", "High Risk"], fill_value=0)
-    color_map = {"Low Risk": "#2A9D8F", "Medium Risk": "#E9C46A", "High Risk": "#E63946"}
+    color_map = {"Low Risk": "#12A594", "Medium Risk": "#F5A524", "High Risk": "#DC3F4A"}
     fig = go.Figure(go.Bar(x=counts.index, y=counts.values, marker_color=[color_map[b] for b in counts.index], text=counts.values, textposition="outside", hovertemplate="<b>%{x}</b><br>Count: %{y}<extra></extra>"))
     fig.update_layout(
         title="Risk Band Distribution Across Uploaded Cohort",
@@ -790,9 +672,9 @@ def plot_batch_band_distribution(bands):
 
 def plot_probability_histogram(probs):
     fig = go.Figure()
-    fig.add_trace(go.Histogram(x=probs, nbinsx=25, marker_color="#1D3557", opacity=0.8, hovertemplate="Probability: %{x:.2f}<br>Count: %{y}<extra></extra>"))
-    fig.add_vline(x=LOW_TH, line=dict(color="#2A9D8F", width=2, dash="dash"), annotation_text="Low/Med", annotation_position="top")
-    fig.add_vline(x=HIGH_TH, line=dict(color="#E63946", width=2, dash="dash"), annotation_text="Med/High", annotation_position="top")
+    fig.add_trace(go.Histogram(x=probs, nbinsx=25, marker_color="#1B2A5C", opacity=0.8, hovertemplate="Probability: %{x:.2f}<br>Count: %{y}<extra></extra>"))
+    fig.add_vline(x=LOW_TH, line=dict(color="#12A594", width=2, dash="dash"), annotation_text="Low/Med", annotation_position="top")
+    fig.add_vline(x=HIGH_TH, line=dict(color="#DC3F4A", width=2, dash="dash"), annotation_text="Med/High", annotation_position="top")
     fig.update_layout(
         title="Distribution of Predicted Probabilities Across Cohort",
         xaxis=dict(title="Dropout Probability", tickformat=".0%", range=[0, 1]),
@@ -819,11 +701,11 @@ def _fig_to_png_bytes(fig, width=700, height=400):
 def _styles():
     styles = getSampleStyleSheet()
     return {
-        "title": ParagraphStyle("TitleStyle", parent=styles["Title"], textColor=colors.HexColor("#1D3557"), fontSize=22, spaceAfter=6),
-        "subtitle": ParagraphStyle("SubTitle", parent=styles["Heading2"], textColor=colors.HexColor("#457B9D"), fontSize=12, spaceAfter=4),
-        "h1": ParagraphStyle("H1", parent=styles["Heading1"], textColor=colors.HexColor("#1D3557"), fontSize=16, spaceBefore=14, spaceAfter=8),
-        "h2": ParagraphStyle("H2", parent=styles["Heading2"], textColor=colors.HexColor("#1D3557"), fontSize=13, spaceBefore=12, spaceAfter=6),
-        "h3": ParagraphStyle("H3", parent=styles["Heading3"], textColor=colors.HexColor("#457B9D"), fontSize=11.5, spaceBefore=8, spaceAfter=4),
+        "title": ParagraphStyle("TitleStyle", parent=styles["Title"], textColor=colors.HexColor("#1B2A5C"), fontSize=22, spaceAfter=6),
+        "subtitle": ParagraphStyle("SubTitle", parent=styles["Heading2"], textColor=colors.HexColor("#3B5BDB"), fontSize=12, spaceAfter=4),
+        "h1": ParagraphStyle("H1", parent=styles["Heading1"], textColor=colors.HexColor("#1B2A5C"), fontSize=16, spaceBefore=14, spaceAfter=8),
+        "h2": ParagraphStyle("H2", parent=styles["Heading2"], textColor=colors.HexColor("#1B2A5C"), fontSize=13, spaceBefore=12, spaceAfter=6),
+        "h3": ParagraphStyle("H3", parent=styles["Heading3"], textColor=colors.HexColor("#3B5BDB"), fontSize=11.5, spaceBefore=8, spaceAfter=4),
         "body": ParagraphStyle("Body", parent=styles["BodyText"], fontSize=10, leading=14),
         "small": ParagraphStyle("Small", parent=styles["BodyText"], fontSize=8.5, leading=11, textColor=colors.HexColor("#6C757D")),
         "mono": ParagraphStyle("Mono", parent=styles["BodyText"], fontName="Courier", fontSize=9, leading=12),
@@ -832,13 +714,13 @@ def _styles():
 
 def _band_color(band):
     return {
-        "Low Risk": colors.HexColor("#2A9D8F"),
-        "Medium Risk": colors.HexColor("#E9C46A"),
-        "High Risk": colors.HexColor("#E63946"),
-    }.get(band, colors.HexColor("#1D3557"))
+        "Low Risk": colors.HexColor("#12A594"),
+        "Medium Risk": colors.HexColor("#F5A524"),
+        "High Risk": colors.HexColor("#DC3F4A"),
+    }.get(band, colors.HexColor("#1B2A5C"))
 
 
-def _std_table(data, col_widths=None, header_bg="#1D3557", row_alt="#F8F9FA"):
+def _std_table(data, col_widths=None, header_bg="#1B2A5C", row_alt="#F8F9FA"):
     t = Table(data, colWidths=col_widths, repeatRows=1)
     style = [
         ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor(header_bg)),
@@ -925,7 +807,7 @@ def build_pdf_report(
     ]
     t = Table(summary_rows, colWidths=[4 * cm, 4.5 * cm, 8 * cm], repeatRows=1)
     t.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1D3557")),
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1B2A5C")),
         ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
         ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
         ("FONTSIZE", (0, 0), (-1, -1), 9.5),
@@ -1355,67 +1237,483 @@ def band_change_summary(base_prob, new_prob):
 
 
 # ==========================================================
+# UI HELPERS (presentation only)
+# ==========================================================
+TONE = {"Low Risk": "ok", "Medium Risk": "warn", "High Risk": "bad"}
+
+LOGO_SVG = (
+    '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#fff" stroke-width="1.8" '
+    'stroke-linecap="round" stroke-linejoin="round"><path d="M22 9 12 4 2 9l10 5 10-5z"/>'
+    '<path d="M6 11.5V16c0 1.2 2.7 3 6 3s6-1.8 6-3v-4.5"/><path d="M22 9v6"/></svg>'
+)
+EMPTY_SVG = (
+    '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#3B5BDB" stroke-width="1.8" '
+    'stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>'
+)
+
+
+def _h(s: str) -> str:
+    return " ".join(line.strip() for line in s.strip().splitlines() if line.strip())
+
+
+def _md(html: str):
+    st.markdown(_h(html), unsafe_allow_html=True)
+
+
+def _card(key: str):
+    try:
+        return st.container(key=key)
+    except TypeError:
+        return st.container(border=True)
+
+
+def _title(title: str, sub: str = ""):
+    sub_html = f'<div class="sec-s">{sub}</div>' if sub else ""
+    _md(f'<div><div class="sec-t">{title}</div>{sub_html}</div>')
+
+
+def _group(label: str):
+    _md(f'<div class="grp">{label}</div>')
+
+
+def _hint(text: str):
+    _md(f'<div class="hint">{text}</div>')
+
+
+def _kpi(label, value, sub="", tone=""):
+    tone_cls = f" tone-{tone}" if tone else ""
+    sub_html = f'<div class="kpi-s">{sub}</div>' if sub else ""
+    return f'<div class="kpi{tone_cls}"><div class="kpi-l">{label}</div><div class="kpi-v">{value}</div>{sub_html}</div>'
+
+
+def _kpi_grid(items):
+    _md('<div class="kpi-grid">' + "".join(items) + "</div>")
+
+
+def render_header():
+    _md(
+        f"""
+        <div class="hero">
+          <div class="hero-l">
+            <div class="logo">{LOGO_SVG}</div>
+            <div>
+              <div class="hero-title">Capacity-Aware Decision Support System</div>
+              <div class="hero-sub">Interpretable Student Retention Prototype</div>
+            </div>
+          </div>
+          <div class="hero-r">
+            <span class="gchip">XGBoost + TreeSHAP</span>
+            <span class="gchip">{MODEL_VERSION}</span>
+            <span class="gchip"><i></i>Model ready</span>
+          </div>
+        </div>
+        """
+    )
+
+
+def render_sidebar():
+    with st.sidebar:
+        _md(
+            f"""
+            <div class="side-t">Risk bands</div>
+            <div class="lg"><div><i style="background:#12A594"></i>Low risk</div><span>&lt; {LOW_TH:.0%}</span></div>
+            <div class="lg"><div><i style="background:#F5A524"></i>Medium risk</div><span>{LOW_TH:.0%} to {HIGH_TH:.0%}</span></div>
+            <div class="lg"><div><i style="background:#DC3F4A"></i>High risk</div><span>&ge; {HIGH_TH:.0%}</span></div>
+            <div class="side-t">Capacity</div>
+            <div class="side-box"><b>{CAPACITY_LIMIT}</b> intensive mentoring slots university-wide. High-risk students beyond the cap are routed to workshops and monitoring.</div>
+            <div class="side-t">Model</div>
+            <div class="side-box"><b>{MODEL_NAME}</b><br>{MODEL_VERSION}</div>
+            <div class="side-t">Use with care</div>
+            <div class="side-box">Decision support only. Predictions are probabilistic and human judgement remains essential.</div>
+            """
+        )
+
+
+def plot_fairness_tpr():
+    groups = ["Non-Scholarship", "Scholarship"]
+    fig = go.Figure()
+    fig.add_trace(go.Bar(name="Unmitigated (global threshold)", x=groups, y=[0.907, 0.885],
+                         marker_color="#94A3B8", text=["0.907", "0.885"], textposition="outside"))
+    fig.add_trace(go.Bar(name="Mitigated (group thresholds)", x=groups, y=[0.849, 0.846],
+                         marker_color="#3B5BDB", text=["0.849", "0.846"], textposition="outside"))
+    fig.update_layout(
+        title="True Positive Rate by Group",
+        barmode="group",
+        yaxis=dict(range=[0, 1.1], title="TPR"),
+        height=320,
+        margin=dict(l=20, r=20, t=50, b=40),
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
+        legend=dict(orientation="h", y=-0.2),
+    )
+    return fig
+
+
+# ==========================================================
+# RESULT RENDERERS
+# ==========================================================
+def render_empty_state():
+    _md(
+        f"""
+        <div class="empty">
+          <div class="empty-i">{EMPTY_SVG}</div>
+          <div class="empty-t">No assessment yet</div>
+          <div class="empty-s">Enter the student's metrics and click 'Generate Diagnostic Prediction' to view
+          capacity-aware interventions, SHAP attributions, counterfactual analysis, and to download a detailed PDF report.</div>
+          <div class="empty-c"><span>Risk band</span><span>SHAP drivers</span><span>Cohort comparison</span><span>What-if simulator</span><span>PDF report</span></div>
+        </div>
+        """
+    )
+
+
+def render_assessment(res, model, medians, feature_cols):
+    p_dropout = res["p"]
+    band = res["band"]
+    action = res["action"]
+    shap_vals = res["shap_vals"]
+    user_input = res["user_input"]
+    radar_fig = res["radar_fig"]
+    tone = TONE.get(band, "bad")
+
+    c_res, c_dl = st.columns([3, 1.1], gap="medium")
+    with c_res:
+        _md(
+            f"""
+            <div class="result tone-{tone}">
+              <div class="result-l"><div class="result-k">Dropout probability</div><div class="result-v">{p_dropout:.1%}</div></div>
+              <div class="result-r">
+                <span class="pill tone-{tone}">{band}</span>
+                <div class="result-ak">Prescriptive action</div>
+                <div class="result-a">{action}</div>
+              </div>
+            </div>
+            """
+        )
+    with c_dl:
+        st.download_button(
+            label="Download Detailed PDF Report",
+            data=res["pdf"],
+            file_name=res["pdf_name"],
+            mime="application/pdf",
+            use_container_width=True,
+            key="dl_single_pdf",
+        )
+        st.caption(f"Report generated {res['stamp']}")
+
+    t_over, t_drv, t_cmp, t_wif, t_act = st.tabs(
+        ["Overview", "Risk drivers", "Cohort comparison", "What-if", "Action plan"]
+    )
+
+    with t_over:
+        _hint(
+            "The gauge shows the model's estimated probability that this student will drop out. "
+            "The colored background bands correspond to the Low, Medium, and High risk thresholds used by the DSS."
+        )
+        col_gauge, col_band = st.columns([1, 1.4], gap="medium")
+        with col_gauge:
+            st.plotly_chart(plot_gauge(p_dropout, band), use_container_width=True, config={"displayModeBar": False})
+        with col_band:
+            st.plotly_chart(plot_threshold_explorer(p_dropout), use_container_width=True, config={"displayModeBar": False})
+
+    with t_drv:
+        _hint(
+            'Each bar shows how much a feature pushed the prediction <b style="color:#DC3F4A;">up (risk)</b> or '
+            '<b style="color:#12A594;">down (protection)</b>. Hover a bar to see the exact impact value.'
+        )
+        col_water, col_donut = st.columns([1.6, 1], gap="medium")
+        with col_water:
+            st.plotly_chart(plot_shap_waterfall(feature_cols, shap_vals, top_n=6), use_container_width=True, config={"displayModeBar": False})
+        with col_donut:
+            st.plotly_chart(plot_contribution_donut(shap_vals), use_container_width=True, config={"displayModeBar": False})
+
+        top_pos = [(friendly_name(feature_cols[i]), shap_vals[i]) for i in np.argsort(shap_vals)[::-1] if shap_vals[i] > 0][:3]
+        top_neg = [(friendly_name(feature_cols[i]), shap_vals[i]) for i in np.argsort(shap_vals) if shap_vals[i] < 0][:3]
+        chips_html = ""
+        for name, val in top_pos:
+            chips_html += f'<span class="factor-chip chip-risk">{name} ({val:+.2f})</span>'
+        for name, val in top_neg:
+            chips_html += f'<span class="factor-chip chip-prot">{name} ({val:+.2f})</span>'
+        _group("Quick read")
+        _md(chips_html if chips_html else "<i>No dominant factors.</i>")
+
+    with t_cmp:
+        _hint(
+            "The dark shape is the student, normalized against the cohort median (yellow ring). "
+            "Values reaching the outer ring mean the student is at or above the median for that indicator."
+        )
+        st.plotly_chart(radar_fig, use_container_width=True, config={"displayModeBar": False})
+
+    with t_wif:
+        _hint("Move a lever below to simulate a change in the student's profile and immediately see how the predicted risk responds.")
+        actionable_features = [
+            "Curricular units 1st sem (approved)",
+            "Curricular units 2nd sem (approved)",
+            "Curricular units 2nd sem (grade)",
+            "Tuition fees up to date",
+            "Scholarship holder",
+            "Age at enrollment",
+        ]
+        actionable_features = [f for f in actionable_features if f in feature_cols]
+        cA, cB = st.columns([1, 1.3], gap="medium")
+        with cA:
+            cf_feature = st.selectbox("Select a feature to perturb", options=actionable_features, format_func=friendly_name, key="cf_feature")
+        with cB:
+            if cf_feature in ("Curricular units 1st sem (approved)", "Curricular units 2nd sem (approved)"):
+                cf_value = st.slider(f"Simulated value for {friendly_name(cf_feature)}", 0, 20, int(user_input.get(cf_feature, 0)), 1, key="cf_value_int")
+            elif "grade" in cf_feature.lower():
+                cf_value = st.slider(f"Simulated value for {friendly_name(cf_feature)}", 0.0, 20.0, float(user_input.get(cf_feature, 10.0)), 0.5, key="cf_value_float")
+            elif cf_feature == "Age at enrollment":
+                cf_value = st.slider(f"Simulated value for {friendly_name(cf_feature)}", 17, 65, int(user_input.get(cf_feature, 20)), 1, key="cf_value_age")
+            else:
+                cf_value = st.selectbox(
+                    f"Simulated value for {friendly_name(cf_feature)}",
+                    options=[("No", 0), ("Yes", 1)] if cf_feature != "Scholarship holder" else [("Yes", 1), ("No", 0)],
+                    format_func=lambda x: x[0], key="cf_value_bin",
+                )[1]
+
+        cf_prob = compute_counterfactual(user_input, cf_feature, cf_value, model, medians, feature_cols)
+        delta, delta_cls, arrow, band_note = band_change_summary(p_dropout, cf_prob)
+        sim_tone = "ok" if delta < -0.005 else "bad" if delta > 0.005 else ""
+        _kpi_grid([
+            _kpi("Baseline probability", f"{p_dropout:.1%}", assign_risk_band(p_dropout)),
+            _kpi("Simulated probability", f"{cf_prob:.1%}", f'<span class="{delta_cls}">{delta:+.2%}</span> {arrow}', sim_tone),
+            _kpi("Risk band shift", assign_risk_band(cf_prob), band_note.strip() or "No band change", TONE.get(assign_risk_band(cf_prob), "")),
+        ])
+        _hint(
+            f"Moving <b>{friendly_name(cf_feature)}</b> from <b>{user_input.get(cf_feature, 'current')}</b> to <b>{cf_value}</b> "
+            f'would change the predicted dropout probability by <span class="{delta_cls}">{delta:+.2%}</span> {arrow}.{band_note}'
+        )
+        current_val = user_input.get(cf_feature, cf_value)
+        st.plotly_chart(
+            plot_counterfactual_curve(user_input, cf_feature, current_val, model, medians, feature_cols),
+            use_container_width=True, config={"displayModeBar": False},
+        )
+
+    with t_act:
+        _md(
+            f"""
+            <div class="result tone-{tone}">
+              <div class="result-r" style="padding:1.1rem 1.4rem;">
+                <span class="pill tone-{tone}">{band}</span>
+                <div class="result-ak">Recommended action</div>
+                <div class="result-a">{action}</div>
+                <div class="fair-d" style="margin:.4rem 0 0;font-size:.9rem;color:#4A5876;">{get_intervention_detail(band)}</div>
+              </div>
+            </div>
+            """
+        )
+        _hint(
+            "The counterfactual explorer can identify one or two high-leverage indicators to discuss with the student. "
+            "Target those indicators first before escalating to intensive support."
+        )
+
+
+def run_batch(batch_df, model, medians, feature_cols):
+    working = batch_df.copy()
+    for f in feature_cols:
+        if f not in working.columns:
+            working[f] = float(medians[f])
+        else:
+            working[f] = pd.to_numeric(working[f], errors="coerce").fillna(float(medians[f]))
+
+    X_batch = working[feature_cols]
+    probs = model.predict_proba(X_batch)[:, 1]
+
+    scored = working.copy()
+    scored["probability"] = probs
+    scored["band"] = [assign_risk_band(p) for p in probs]
+    scored = scored.sort_values("probability", ascending=False).reset_index(drop=True)
+    scored["student_index"] = np.arange(len(scored))
+
+    actions = []
+    intensive_allocated = 0
+    for _, row in scored.iterrows():
+        if row["band"] == "High Risk" and intensive_allocated < CAPACITY_LIMIT:
+            actions.append("Intensive Mentoring and Counseling")
+            intensive_allocated += 1
+        elif row["band"] == "High Risk":
+            actions.append("Skills Workshops and Progress Monitoring (capacity overflow)")
+        elif row["band"] == "Medium Risk":
+            actions.append("Skills Workshops and Progress Monitoring")
+        else:
+            actions.append("General Academic Support")
+    scored["action"] = actions
+
+    n_total = len(scored)
+    n_high = int((scored["band"] == "High Risk").sum())
+    n_med = int((scored["band"] == "Medium Risk").sum())
+    n_low = int((scored["band"] == "Low Risk").sum())
+    n_intensive = int((scored["action"] == "Intensive Mentoring and Counseling").sum())
+    n_overflow = int((scored["action"].str.contains("capacity overflow", na=False)).sum())
+    mean_prob = float(scored["probability"].mean())
+    median_prob = float(scored["probability"].median())
+
+    probs_sorted = np.sort(probs)[::-1]
+    total_risk = probs_sorted.sum()
+    cap = min(CAPACITY_LIMIT, n_total)
+    risk_at_cap = probs_sorted[:cap].sum() / total_risk if total_risk > 0 else 0.0
+    random_at_cap = cap / n_total if n_total > 0 else 0.0
+    lift = (risk_at_cap / random_at_cap) if random_at_cap > 0 else 0.0
+
+    cap_fig = plot_capacity_curve(probs_sorted)
+    dist_fig = plot_batch_band_distribution(scored["band"].tolist())
+    hist_fig = plot_probability_histogram(probs)
+
+    csv_bytes = scored.to_csv(index=False).encode("utf-8")
+
+    curve_png = _fig_to_png_bytes(cap_fig, width=850, height=500)
+    dist_png = _fig_to_png_bytes(dist_fig, width=750, height=420)
+    hist_png = _fig_to_png_bytes(hist_fig, width=750, height=420)
+
+    summary_df = pd.Series({
+        "Students scored": n_total,
+        "High risk": f"{n_high} ({n_high / n_total:.1%})" if n_total else "0",
+        "Medium risk": f"{n_med} ({n_med / n_total:.1%})" if n_total else "0",
+        "Low risk": f"{n_low} ({n_low / n_total:.1%})" if n_total else "0",
+        "Mean probability": f"{mean_prob:.2%}",
+        "Median probability": f"{median_prob:.2%}",
+        "Intensive slots used": f"{n_intensive} / {CAPACITY_LIMIT}",
+        "Capacity overflow": n_overflow,
+        "Risk captured at capacity": f"{risk_at_cap:.2%}",
+        "Lift vs random": f"{lift:.2f}x",
+    })
+
+    batch_pdf = build_batch_pdf_report(
+        scored_df=scored[["student_index", "probability", "band", "action"]],
+        summary_df=summary_df,
+        curve_png=curve_png,
+        dist_png=dist_png,
+        hist_png=hist_png,
+        top_n=50,
+    )
+    stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    return {
+        "n_total": n_total, "n_high": n_high, "n_med": n_med, "n_low": n_low,
+        "n_intensive": n_intensive, "n_overflow": n_overflow, "mean_prob": mean_prob,
+        "risk_at_cap": risk_at_cap, "lift": lift,
+        "cap_fig": cap_fig, "dist_fig": dist_fig, "hist_fig": hist_fig,
+        "queue": scored[["student_index", "probability", "band", "action"]].head(50).copy(),
+        "csv": csv_bytes, "csv_name": f"cohort_scored_{stamp}.csv",
+        "pdf": batch_pdf.getvalue(), "pdf_name": f"cohort_report_{stamp}.pdf",
+    }
+
+
+def render_batch(b):
+    n = b["n_total"] or 1
+    _kpi_grid([
+        _kpi("Students scored", f"{b['n_total']:,}"),
+        _kpi("High risk", f"{b['n_high']:,}", f"{b['n_high'] / n:.1%} of cohort", "bad"),
+        _kpi("Medium risk", f"{b['n_med']:,}", f"{b['n_med'] / n:.1%} of cohort", "warn"),
+        _kpi("Low risk", f"{b['n_low']:,}", f"{b['n_low'] / n:.1%} of cohort", "ok"),
+        _kpi("Mean probability", f"{b['mean_prob']:.1%}"),
+        _kpi("Intensive slots used", f"{b['n_intensive']} / {CAPACITY_LIMIT}"),
+        _kpi("Capacity overflow", f"{b['n_overflow']:,}", "routed to workshops"),
+        _kpi("Risk captured at capacity", f"{b['risk_at_cap']:.1%}", f"{b['lift']:.2f}x lift vs random"),
+    ])
+
+    d1, d2 = st.columns(2, gap="medium")
+    with d1:
+        st.download_button("Download Annotated Cohort CSV", data=b["csv"], file_name=b["csv_name"],
+                           mime="text/csv", use_container_width=True, key="dl_batch_csv")
+    with d2:
+        st.download_button("Download Detailed Batch PDF Report", data=b["pdf"], file_name=b["pdf_name"],
+                           mime="application/pdf", use_container_width=True, key="dl_batch_pdf")
+
+    t_cap, t_dist, t_queue = st.tabs(["Capacity constraint", "Cohort distributions", "Priority queue"])
+    with t_cap:
+        st.plotly_chart(b["cap_fig"], use_container_width=True, config={"displayModeBar": False})
+    with t_dist:
+        c1, c2 = st.columns(2, gap="medium")
+        with c1:
+            st.plotly_chart(b["dist_fig"], use_container_width=True, config={"displayModeBar": False})
+        with c2:
+            st.plotly_chart(b["hist_fig"], use_container_width=True, config={"displayModeBar": False})
+    with t_queue:
+        _title("Priority queue", "Top 50 highest-risk students, ranked by predicted dropout probability.")
+        queue = b["queue"].copy()
+        queue["probability"] = queue["probability"] * 100
+        kwargs = {}
+        if hasattr(st, "column_config"):
+            kwargs["column_config"] = {
+                "student_index": st.column_config.NumberColumn("Student idx", format="%d"),
+                "probability": st.column_config.ProgressColumn("Dropout probability (%)", min_value=0, max_value=100, format="%.1f"),
+                "band": st.column_config.TextColumn("Risk band"),
+                "action": st.column_config.TextColumn("Recommended action", width="large"),
+            }
+            kwargs["hide_index"] = True
+        st.dataframe(queue, use_container_width=True, **kwargs)
+
+
+# ==========================================================
 # MAIN APP
 # ==========================================================
 def main():
     model, explainer, feature_cols, X_train = load_and_train_model()
     medians = X_train.median()
 
-    st.markdown('<div class="main-header">Capacity-Aware Decision Support System</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Interpretable Student Retention Prototype</div>', unsafe_allow_html=True)
+    render_header()
+    render_sidebar()
 
     tab_eval, tab_batch, tab_info, tab_fairness = st.tabs([
-        "Student Risk Assessment",
-        "Batch Cohort Scoring",
-        "System Architecture",
-        "Fairness Mitigation Audit",
+        "Student Assessment",
+        "Cohort Scoring",
+        "How It Works",
+        "Fairness Audit",
     ])
 
     # ---------------------------------------------------------
     # TAB 1: EVALUATION
     # ---------------------------------------------------------
     with tab_eval:
-        col_input, col_results = st.columns([1.2, 2])
+        col_input, col_results = st.columns([1, 2.15], gap="large")
 
         with col_input:
-            st.markdown("---")
-            st.markdown("### Student Profile")
-            user_input = {}
+            with _card("card-input"):
+                _title("Student profile", "Enter the indicators, then run the assessment.")
+                user_input = {}
 
-            st.markdown("##### Academic Indicators")
-            user_input["Curricular units 1st sem (approved)"] = st.slider(
-                "1st Semester Passed Units", 0, 20,
-                int(X_train["Curricular units 1st sem (approved)"].median()),
-                help="Number of curricular units the student passed in semester 1.",
-            )
-            user_input["Curricular units 2nd sem (approved)"] = st.slider(
-                "2nd Semester Passed Units", 0, 20,
-                int(X_train["Curricular units 2nd sem (approved)"].median()),
-                help="Number of curricular units the student passed in semester 2.",
-            )
-            user_input["Curricular units 2nd sem (grade)"] = st.slider(
-                "2nd Semester Average Grade", 0.0, 20.0,
-                float(X_train["Curricular units 2nd sem (grade)"].median()), 0.5,
-                help="Average grade across all 2nd semester units (0-20).",
-            )
+                _group("Academic indicators")
+                a1, a2 = st.columns(2)
+                with a1:
+                    user_input["Curricular units 1st sem (approved)"] = st.slider(
+                        "1st Semester Passed Units", 0, 20,
+                        int(X_train["Curricular units 1st sem (approved)"].median()),
+                        help="Number of curricular units the student passed in semester 1.",
+                    )
+                with a2:
+                    user_input["Curricular units 2nd sem (approved)"] = st.slider(
+                        "2nd Semester Passed Units", 0, 20,
+                        int(X_train["Curricular units 2nd sem (approved)"].median()),
+                        help="Number of curricular units the student passed in semester 2.",
+                    )
+                user_input["Curricular units 2nd sem (grade)"] = st.slider(
+                    "2nd Semester Average Grade", 0.0, 20.0,
+                    float(X_train["Curricular units 2nd sem (grade)"].median()), 0.5,
+                    help="Average grade across all 2nd semester units (0-20).",
+                )
 
-            st.markdown("##### Socio-Financial Indicators")
-            user_input["Tuition fees up to date"] = st.selectbox(
-                "Tuition Fee Status", options=[("Up to date", 1), ("Overdue", 0)],
-                format_func=lambda x: x[0], help="Whether tuition fees are current.",
-            )[1]
-            user_input["Scholarship holder"] = st.selectbox(
-                "Scholarship Holder", options=[("Yes", 1), ("No", 0)],
-                format_func=lambda x: x[0], help="Whether the student receives a scholarship.",
-            )[1]
-            user_input["Gender"] = st.selectbox(
-                "Gender (UCI Encoding)", options=[("Male", 1), ("Female", 0)],
-                format_func=lambda x: x[0],
-            )[1]
-            user_input["Age at enrollment"] = st.number_input("Age at Enrollment", 17, 65, 20)
+                _group("Socio-financial indicators")
+                s1, s2 = st.columns(2)
+                with s1:
+                    user_input["Tuition fees up to date"] = st.selectbox(
+                        "Tuition Fee Status", options=[("Up to date", 1), ("Overdue", 0)],
+                        format_func=lambda x: x[0], help="Whether tuition fees are current.",
+                    )[1]
+                with s2:
+                    user_input["Scholarship holder"] = st.selectbox(
+                        "Scholarship Holder", options=[("Yes", 1), ("No", 0)],
+                        format_func=lambda x: x[0], help="Whether the student receives a scholarship.",
+                    )[1]
+                s3, s4 = st.columns(2)
+                with s3:
+                    user_input["Gender"] = st.selectbox(
+                        "Gender (UCI Encoding)", options=[("Male", 1), ("Female", 0)],
+                        format_func=lambda x: x[0],
+                    )[1]
+                with s4:
+                    user_input["Age at enrollment"] = st.number_input("Age at Enrollment", 17, 65, 20)
 
-            evaluate = st.button("Generate Diagnostic Prediction", use_container_width=True)
-            st.markdown("---")
+                evaluate = st.button("Generate Diagnostic Prediction", type="primary", use_container_width=True)
 
         with col_results:
             if evaluate:
@@ -1423,29 +1721,11 @@ def main():
                     time.sleep(0.4)
                     x_full = {feat: user_input.get(feat, float(medians[feat])) for feat in feature_cols}
                     x_df = pd.DataFrame([x_full])
-                    p_dropout = float(model.predict_proba(x_df)[:, 1])
+                    p_dropout = float(model.predict_proba(x_df)[:, 1][0])
                     band = assign_risk_band(p_dropout)
                     action = get_intervention(band)
                     shap_vals = explainer.shap_values(x_df)[0]
 
-                    tier_class = (
-                        "tier-low" if band == "Low Risk"
-                        else "tier-med" if band == "Medium Risk"
-                        else "tier-high"
-                    )
-
-                    st.markdown(
-                        f"""
-                        <div class="{tier_class}">
-                            <h3 style="margin-top:0;">Diagnostic Output</h3>
-                            <p><strong>Risk Stratification:</strong> {band.upper()}</p>
-                            <p style="margin-bottom:0;"><strong>Prescriptive Action:</strong> {action}</p>
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
-
-                    # Precompute PDF assets (radar + counterfactual curve)
                     radar_features = [
                         "Curricular units 1st sem (approved)",
                         "Curricular units 2nd sem (approved)",
@@ -1479,459 +1759,173 @@ def main():
                         radar_png=radar_png,
                         top_k=10,
                     )
-                    st.download_button(
-                        label="Download Detailed PDF Report",
-                        data=pdf_buffer,
-                        file_name=f"dropout_risk_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
-                        mime="application/pdf",
-                        use_container_width=True,
-                    )
+                    now = datetime.now()
+                    st.session_state["assessment"] = {
+                        "user_input": dict(user_input),
+                        "p": p_dropout,
+                        "band": band,
+                        "action": action,
+                        "shap_vals": shap_vals,
+                        "radar_fig": radar_fig,
+                        "pdf": pdf_buffer.getvalue(),
+                        "pdf_name": f"dropout_risk_report_{now.strftime('%Y%m%d_%H%M%S')}.pdf",
+                        "stamp": now.strftime("%H:%M:%S"),
+                    }
 
-                    st.markdown("---")
-                    st.markdown("### Visual Explanation")
-
-                    with st.expander("Step 1 - How high is the risk?", expanded=True):
-                        st.markdown(
-                            """
-                            <div class="explain-box">
-                                <h4><span class="step-badge">1</span> Attrition Probability</h4>
-                                The gauge shows the model's estimated probability that this
-                                student will drop out. The colored background bands correspond
-                                to the Low, Medium, and High risk thresholds used by the DSS.
-                            </div>
-                            """,
-                            unsafe_allow_html=True,
-                        )
-                        col_gauge, col_band = st.columns([1, 1.4])
-                        with col_gauge:
-                            st.plotly_chart(plot_gauge(p_dropout, band), use_container_width=True, config={"displayModeBar": False})
-                        with col_band:
-                            st.plotly_chart(plot_threshold_explorer(p_dropout), use_container_width=True, config={"displayModeBar": False})
-
-                    with st.expander("Step 2 - Which factors drive the risk?", expanded=True):
-                        st.markdown(
-                            """
-                            <div class="explain-box">
-                                <h4><span class="step-badge">2</span> Factor Attribution (SHAP)</h4>
-                                Each bar shows how much a feature pushed the prediction
-                                <b style="color:#E63946;">up (risk)</b> or
-                                <b style="color:#2A9D8F;">down (protection)</b>.
-                                Hover a bar to see the exact impact value.
-                            </div>
-                            """,
-                            unsafe_allow_html=True,
-                        )
-                        col_water, col_donut = st.columns([1.6, 1])
-                        with col_water:
-                            st.plotly_chart(plot_shap_waterfall(feature_cols, shap_vals, top_n=6), use_container_width=True, config={"displayModeBar": False})
-                        with col_donut:
-                            st.plotly_chart(plot_contribution_donut(shap_vals), use_container_width=True, config={"displayModeBar": False})
-
-                        top_pos = [(friendly_name(feature_cols[i]), shap_vals[i]) for i in np.argsort(shap_vals)[::-1] if shap_vals[i] > 0][:3]
-                        top_neg = [(friendly_name(feature_cols[i]), shap_vals[i]) for i in np.argsort(shap_vals) if shap_vals[i] < 0][:3]
-                        chips_html = ""
-                        for name, val in top_pos:
-                            chips_html += f'<span class="factor-chip chip-risk">{name} ({val:+.2f})</span>'
-                        for name, val in top_neg:
-                            chips_html += f'<span class="factor-chip chip-prot">{name} ({val:+.2f})</span>'
-                        st.markdown(
-                            f"""
-                            <div class="explain-box">
-                                <h4>Quick Read</h4>
-                                {chips_html if chips_html else "<i>No dominant factors.</i>"}
-                            </div>
-                            """,
-                            unsafe_allow_html=True,
-                        )
-
-                    with st.expander("Step 3 - How does this student compare to the cohort?", expanded=False):
-                        st.markdown(
-                            """
-                            <div class="explain-box">
-                                <h4><span class="step-badge">3</span> Profile vs Cohort Median</h4>
-                                The dark shape is the student, normalized against the cohort
-                                median (yellow ring). Values reaching the outer ring mean the
-                                student is at or above the median for that indicator.
-                            </div>
-                            """,
-                            unsafe_allow_html=True,
-                        )
-                        st.plotly_chart(radar_fig, use_container_width=True, config={"displayModeBar": False})
-
-                    with st.expander("Step 4 - What should we do about it?", expanded=True):
-                        st.markdown(
-                            f"""
-                            <div class="explain-box">
-                                <h4><span class="step-badge">4</span> Prescriptive Action</h4>
-                                Based on the <b>{band}</b> classification, the DSS recommends:
-                                <br><br>
-                                <b style="font-size:1.05rem;">{action}</b>
-                                <br><br>
-                                <i>{get_intervention_detail(band)}</i>
-                            </div>
-                            """,
-                            unsafe_allow_html=True,
-                        )
-
-                    with st.expander("Step 5 - What-if: Counterfactual Explorer", expanded=False):
-                        st.markdown(
-                            """
-                            <div class="explain-box">
-                                <h4><span class="step-badge">5</span> Counterfactual What-If Analysis</h4>
-                                Move a lever below to simulate a change in the student's profile
-                                and immediately see how the predicted risk responds.
-                            </div>
-                            """,
-                            unsafe_allow_html=True,
-                        )
-                        actionable_features = [
-                            "Curricular units 1st sem (approved)",
-                            "Curricular units 2nd sem (approved)",
-                            "Curricular units 2nd sem (grade)",
-                            "Tuition fees up to date",
-                            "Scholarship holder",
-                            "Age at enrollment",
-                        ]
-                        actionable_features = [f for f in actionable_features if f in feature_cols]
-                        cf_feature = st.selectbox("Select a feature to perturb", options=actionable_features, format_func=friendly_name, key="cf_feature")
-
-                        if cf_feature in ("Curricular units 1st sem (approved)", "Curricular units 2nd sem (approved)"):
-                            cf_value = st.slider(f"Simulated value for {friendly_name(cf_feature)}", 0, 20, int(user_input.get(cf_feature, 0)), 1, key="cf_value_int")
-                        elif "grade" in cf_feature.lower():
-                            cf_value = st.slider(f"Simulated value for {friendly_name(cf_feature)}", 0.0, 20.0, float(user_input.get(cf_feature, 10.0)), 0.5, key="cf_value_float")
-                        elif cf_feature == "Age at enrollment":
-                            cf_value = st.slider(f"Simulated value for {friendly_name(cf_feature)}", 17, 65, int(user_input.get(cf_feature, 20)), 1, key="cf_value_age")
-                        else:
-                            cf_value = st.selectbox(
-                                f"Simulated value for {friendly_name(cf_feature)}",
-                                options=[("No", 0), ("Yes", 1)] if cf_feature != "Scholarship holder" else [("Yes", 1), ("No", 0)],
-                                format_func=lambda x: x[0], key="cf_value_bin",
-                            )[1]
-
-                        cf_prob = compute_counterfactual(user_input, cf_feature, cf_value, model, medians, feature_cols)
-                        delta, delta_cls, arrow, band_note = band_change_summary(p_dropout, cf_prob)
-
-                        col_cf1, col_cf2, col_cf3 = st.columns(3)
-                        col_cf1.metric("Baseline Probability", f"{p_dropout:.1%}")
-                        col_cf2.metric("Simulated Probability", f"{cf_prob:.1%}", delta=f"{delta:+.2%}")
-                        col_cf3.metric("Risk Band Shift", assign_risk_band(cf_prob))
-
-                        st.markdown(
-                            f"""
-                            <div class="explain-box">
-                                Moving <b>{friendly_name(cf_feature)}</b>
-                                from <b>{user_input.get(cf_feature, 'current')}</b>
-                                to <b>{cf_value}</b> would change the predicted dropout
-                                probability by <span class="{delta_cls}">{delta:+.2%}</span> {arrow}.
-                                {band_note}
-                            </div>
-                            """,
-                            unsafe_allow_html=True,
-                        )
-
-                        current_val = user_input.get(cf_feature, cf_value)
-                        st.plotly_chart(
-                            plot_counterfactual_curve(user_input, cf_feature, current_val, model, medians, feature_cols),
-                            use_container_width=True, config={"displayModeBar": False},
-                        )
-
-                    with st.expander("Step 6 - Recommended action summary", expanded=False):
-                        st.markdown(
-                            f"""
-                            <div class="explain-box">
-                                <h4><span class="step-badge">6</span> Final Recommendation</h4>
-                                <b>{action}</b>
-                                <br><br>
-                                The counterfactual explorer above can identify one or two
-                                high-leverage indicators to discuss with the student. Target
-                                those indicators first before escalating to intensive support.
-                            </div>
-                            """,
-                            unsafe_allow_html=True,
-                        )
-
+            res = st.session_state.get("assessment")
+            if res is None:
+                render_empty_state()
             else:
-                st.info(
-                    "Enter the student's metrics and click 'Generate Diagnostic Prediction' "
-                    "to view capacity-aware interventions, SHAP attributions, counterfactual "
-                    "analysis, and to download a detailed PDF report."
-                )
+                render_assessment(res, model, medians, feature_cols)
 
     # ---------------------------------------------------------
     # TAB 2: BATCH COHORT SCORING
     # ---------------------------------------------------------
     with tab_batch:
-        st.markdown("### Batch Cohort Scoring")
-        st.markdown(
-            """
-            Upload a CSV with the same schema as the training data (excluding the `target`
-            column) to score an entire cohort in one pass. The DSS will apply the capacity
-            constraint (top 200 students) automatically and return an annotated CSV plus a
-            detailed summary PDF.
-            """
+        _title(
+            "Batch cohort scoring",
+            f"Upload a CSV with the same schema as the training data (excluding the <code>target</code> column) to score an entire "
+            f"cohort in one pass. The DSS applies the capacity constraint (top {CAPACITY_LIMIT} students) automatically and returns "
+            f"an annotated CSV plus a detailed summary PDF.",
         )
-
-        st.markdown(
-            """
-            <div class="explain-box">
-                <h4>Expected CSV Format</h4>
-                The file should contain one row per student. Columns must match the model's
-                feature names. Missing optional columns are imputed with cohort medians. A
-                helper template can be generated below.
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-        col_up1, col_up2 = st.columns([2, 1])
-        with col_up1:
+        c_up, c_tpl = st.columns([1.7, 1], gap="large")
+        with c_up:
             uploaded_file = st.file_uploader("Upload cohort CSV", type=["csv"], help="One row per student.")
-        with col_up2:
-            template_df = pd.DataFrame([{f: float(X_train[f].median()) for f in feature_cols}])
-            st.download_button(
-                label="Download CSV Template",
-                data=template_df.to_csv(index=False).encode("utf-8"),
-                file_name="cohort_template.csv",
-                mime="text/csv",
-                use_container_width=True,
-            )
+        with c_tpl:
+            with _card("card-template"):
+                _group("Expected CSV format")
+                _md(
+                    '<div class="sec-s">One row per student. Columns must match the model\'s feature names. '
+                    'Missing optional columns are imputed with cohort medians.</div>'
+                )
+                template_df = pd.DataFrame([{f: float(X_train[f].median()) for f in feature_cols}])
+                st.download_button(
+                    label="Download CSV Template",
+                    data=template_df.to_csv(index=False).encode("utf-8"),
+                    file_name="cohort_template.csv",
+                    mime="text/csv",
+                    use_container_width=True,
+                )
 
+        batch_df = None
+        file_key = None
         if uploaded_file is not None:
+            file_key = f"{uploaded_file.name}:{uploaded_file.size}"
             try:
+                uploaded_file.seek(0)
                 batch_df = pd.read_csv(uploaded_file)
             except Exception as e:
                 st.error(f"Could not read CSV: {e}")
-                st.stop()
 
-            st.markdown("#### Uploaded Data Preview")
-            st.dataframe(batch_df.head(10), use_container_width=True)
-            st.caption(f"Total rows uploaded: {len(batch_df)}")
+        if batch_df is not None:
+            with st.expander(f"Uploaded data preview  |  {len(batch_df):,} rows", expanded=False):
+                st.dataframe(batch_df.head(10), use_container_width=True)
+                st.caption(f"Total rows uploaded: {len(batch_df)}")
 
-            if st.button("Run Batch Scoring", use_container_width=True):
+            run_col, _spacer = st.columns([1, 2])
+            with run_col:
+                run_clicked = st.button("Run Batch Scoring", type="primary", use_container_width=True)
+
+            if run_clicked:
                 with st.spinner("Scoring cohort and applying capacity constraint..."):
                     time.sleep(0.3)
-                    working = batch_df.copy()
-                    for f in feature_cols:
-                        if f not in working.columns:
-                            working[f] = float(medians[f])
-                        else:
-                            working[f] = pd.to_numeric(working[f], errors="coerce").fillna(float(medians[f]))
+                    st.session_state["batch_result"] = run_batch(batch_df, model, medians, feature_cols)
+                    st.session_state["batch_key"] = file_key
 
-                    X_batch = working[feature_cols]
-                    probs = model.predict_proba(X_batch)[:, 1]
-
-                    scored = working.copy()
-                    scored["probability"] = probs
-                    scored["band"] = [assign_risk_band(p) for p in probs]
-                    scored = scored.sort_values("probability", ascending=False).reset_index(drop=True)
-                    scored["student_index"] = np.arange(len(scored))
-
-                    actions = []
-                    intensive_allocated = 0
-                    for _, row in scored.iterrows():
-                        if row["band"] == "High Risk" and intensive_allocated < CAPACITY_LIMIT:
-                            actions.append("Intensive Mentoring and Counseling")
-                            intensive_allocated += 1
-                        elif row["band"] == "High Risk":
-                            actions.append("Skills Workshops and Progress Monitoring (capacity overflow)")
-                        elif row["band"] == "Medium Risk":
-                            actions.append("Skills Workshops and Progress Monitoring")
-                        else:
-                            actions.append("General Academic Support")
-                    scored["action"] = actions
-
-                    n_total = len(scored)
-                    n_high = int((scored["band"] == "High Risk").sum())
-                    n_med = int((scored["band"] == "Medium Risk").sum())
-                    n_low = int((scored["band"] == "Low Risk").sum())
-                    n_intensive = int((scored["action"] == "Intensive Mentoring and Counseling").sum())
-                    n_overflow = int((scored["action"].str.contains("capacity overflow", na=False)).sum())
-                    mean_prob = float(scored["probability"].mean())
-                    median_prob = float(scored["probability"].median())
-
-                    probs_sorted = np.sort(probs)[::-1]
-                    total_risk = probs_sorted.sum()
-                    cap = min(CAPACITY_LIMIT, n_total)
-                    risk_at_cap = probs_sorted[:cap].sum() / total_risk if total_risk > 0 else 0.0
-                    random_at_cap = cap / n_total if n_total > 0 else 0.0
-                    lift = (risk_at_cap / random_at_cap) if random_at_cap > 0 else 0.0
-
-                    st.markdown("---")
-                    st.markdown("### Cohort Summary")
-                    col_s1, col_s2, col_s3, col_s4 = st.columns(4)
-                    col_s1.metric("Students Scored", f"{n_total}")
-                    col_s2.metric("High Risk", f"{n_high}")
-                    col_s3.metric("Medium Risk", f"{n_med}")
-                    col_s4.metric("Low Risk", f"{n_low}")
-
-                    col_s5, col_s6, col_s7, col_s8 = st.columns(4)
-                    col_s5.metric("Mean Probability", f"{mean_prob:.1%}")
-                    col_s6.metric("Intensive Slots Used", f"{n_intensive} / {CAPACITY_LIMIT}")
-                    col_s7.metric("Capacity Overflow", f"{n_overflow}")
-                    col_s8.metric("Risk Captured at Capacity", f"{risk_at_cap:.1%}", delta=f"{lift:.2f}x lift")
-
-                    st.markdown("---")
-                    st.markdown("### Capacity Constraint Visualization")
-                    cap_fig = plot_capacity_curve(probs_sorted)
-                    st.plotly_chart(cap_fig, use_container_width=True, config={"displayModeBar": False})
-
-                    st.markdown("---")
-                    st.markdown("### Cohort Distributions")
-                    col_dist1, col_dist2 = st.columns(2)
-                    dist_fig = plot_batch_band_distribution(scored["band"].tolist())
-                    hist_fig = plot_probability_histogram(probs)
-                    with col_dist1:
-                        st.plotly_chart(dist_fig, use_container_width=True, config={"displayModeBar": False})
-                    with col_dist2:
-                        st.plotly_chart(hist_fig, use_container_width=True, config={"displayModeBar": False})
-
-                    st.markdown("---")
-                    st.markdown("### Priority Queue (Top 50 Highest-Risk Students)")
-                    preview_cols = ["student_index", "probability", "band", "action"]
-                    st.dataframe(
-                        scored[preview_cols].head(50).style.format({"probability": "{:.2%}"}),
-                        use_container_width=True,
-                    )
-
-                    csv_bytes = scored.to_csv(index=False).encode("utf-8")
-                    st.download_button(
-                        label="Download Annotated Cohort CSV",
-                        data=csv_bytes,
-                        file_name=f"cohort_scored_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
-                        mime="text/csv",
-                        use_container_width=True,
-                    )
-
-                    # Build detailed PDF
-                    curve_png = _fig_to_png_bytes(cap_fig, width=850, height=500)
-                    dist_png = _fig_to_png_bytes(dist_fig, width=750, height=420)
-                    hist_png = _fig_to_png_bytes(hist_fig, width=750, height=420)
-
-                    summary_df = pd.Series({
-                        "Students scored": n_total,
-                        "High risk": f"{n_high} ({n_high / n_total:.1%})" if n_total else "0",
-                        "Medium risk": f"{n_med} ({n_med / n_total:.1%})" if n_total else "0",
-                        "Low risk": f"{n_low} ({n_low / n_total:.1%})" if n_total else "0",
-                        "Mean probability": f"{mean_prob:.2%}",
-                        "Median probability": f"{median_prob:.2%}",
-                        "Intensive slots used": f"{n_intensive} / {CAPACITY_LIMIT}",
-                        "Capacity overflow": n_overflow,
-                        "Risk captured at capacity": f"{risk_at_cap:.2%}",
-                        "Lift vs random": f"{lift:.2f}x",
-                    })
-
-                    batch_pdf = build_batch_pdf_report(
-                        scored_df=scored[["student_index", "probability", "band", "action"]],
-                        summary_df=summary_df,
-                        curve_png=curve_png,
-                        dist_png=dist_png,
-                        hist_png=hist_png,
-                        top_n=50,
-                    )
-                    st.download_button(
-                        label="Download Detailed Batch PDF Report",
-                        data=batch_pdf,
-                        file_name=f"cohort_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
-                        mime="application/pdf",
-                        use_container_width=True,
-                    )
+            if st.session_state.get("batch_result") is not None and st.session_state.get("batch_key") == file_key:
+                render_batch(st.session_state["batch_result"])
 
     # ---------------------------------------------------------
-    # TAB 3: SYSTEM ARCHITECTURE
+    # TAB 3: HOW IT WORKS
     # ---------------------------------------------------------
     with tab_info:
-        col_m1, col_m2, col_m3 = st.columns(3)
+        col_m1, col_m2, col_m3 = st.columns(3, gap="medium")
         col_m1.markdown(
-            """
-            <div class="metric-card">
-                <h4>Validation Engine</h4>
-                <p><strong>XGBoost</strong></p>
-                <p>5-Fold Stratified CV</p>
-            </div>
-            """,
+            _h("""
+            <div class="metric-card"><h4>Validation Engine</h4><p><strong>XGBoost</strong></p><p>5-Fold Stratified CV</p></div>
+            """),
             unsafe_allow_html=True,
         )
         col_m2.markdown(
-            """
-            <div class="metric-card">
-                <h4>Cross-Modality AUC</h4>
-                <p><strong>&gt; 0.950</strong></p>
-                <p>Traditional, LMS, xAPI, MOOC</p>
-            </div>
-            """,
+            _h("""
+            <div class="metric-card"><h4>Cross-Modality AUC</h4><p><strong>&gt; 0.950</strong></p><p>Traditional, LMS, xAPI, MOOC</p></div>
+            """),
             unsafe_allow_html=True,
         )
         col_m3.markdown(
-            """
-            <div class="metric-card">
-                <h4>Calibration Metric</h4>
-                <p><strong>0.058</strong></p>
-                <p>Brier Score</p>
-            </div>
-            """,
+            _h("""
+            <div class="metric-card"><h4>Calibration Metric</h4><p><strong>0.058</strong></p><p>Brier Score</p></div>
+            """),
             unsafe_allow_html=True,
         )
-        st.markdown(
-            """
-            ### Mathematical Capacity Constraint (C=200)
 
-            Unlike standard predictive models that output a vacuum probability, this Decision
-            Support System utilizes a mathematically defined objective function to allocate
-            resources:
+        c_left, c_right = st.columns([1.3, 1], gap="large")
+        with c_left:
+            with _card("card-math"):
+                _title(f"Mathematical capacity constraint (C={CAPACITY_LIMIT})")
+                st.markdown(
+                    f"""
+Unlike standard predictive models that output a vacuum probability, this Decision
+Support System utilizes a mathematically defined objective function to allocate
+resources:
 
-            ```
-            max sum (p_i * I(p_i >= T_H)) * a_i    s.t.    sum a_i <= C
-            ```
+```
+max sum (p_i * I(p_i >= T_H)) * a_i    s.t.    sum a_i <= C
+```
 
-            This explicitly forces the algorithm to prioritize the top 200 high-risk cases for
-            Intensive Mentoring, dynamically routing capacity overflow to scalable workshops.
-            The Batch Cohort Scoring tab visualizes this constraint directly through the
-            cumulative risk-captured curve.
-            """
-        )
+This explicitly forces the algorithm to prioritize the top {CAPACITY_LIMIT} high-risk cases for
+Intensive Mentoring, dynamically routing capacity overflow to scalable workshops.
+The Batch Cohort Scoring tab visualizes this constraint directly through the
+cumulative risk-captured curve.
+"""
+                )
+        with c_right:
+            _title("From profile to action")
+            _md(
+                f"""
+                <div class="flow">
+                  <div class="flow-s"><div class="flow-n">1</div><div><div class="flow-t">Student profile</div><div class="flow-d">Indicators entered by the advisor; missing features use cohort medians.</div></div></div>
+                  <div class="flow-s"><div class="flow-n">2</div><div><div class="flow-t">XGBoost scoring</div><div class="flow-d">Estimates the probability of dropout.</div></div></div>
+                  <div class="flow-s"><div class="flow-n">3</div><div><div class="flow-t">TreeSHAP explanation</div><div class="flow-d">Shows which factors raise or lower the risk.</div></div></div>
+                  <div class="flow-s"><div class="flow-n">4</div><div><div class="flow-t">Risk band</div><div class="flow-d">Low below {LOW_TH:.0%}, Medium below {HIGH_TH:.0%}, High from {HIGH_TH:.0%}.</div></div></div>
+                  <div class="flow-s"><div class="flow-n">5</div><div><div class="flow-t">Capacity-aware action</div><div class="flow-d">Up to {CAPACITY_LIMIT} intensive slots; overflow goes to workshops.</div></div></div>
+                </div>
+                """
+            )
 
     # ---------------------------------------------------------
-    # TAB 4: FAIRNESS MITIGATION
+    # TAB 4: FAIRNESS AUDIT
     # ---------------------------------------------------------
     with tab_fairness:
-        st.markdown(
-            """
-            ### Active Equal Opportunity Mitigation
-
-            Rather than passively auditing bias, the framework actively enforces Equal
-            Opportunity by optimizing group-specific probability thresholds (T_H,g). This
-            neutralizes historical demographic disparities in intervention allocation.
-            """
+        _title(
+            "Active Equal Opportunity mitigation",
+            "Rather than passively auditing bias, the framework actively enforces Equal Opportunity by optimizing "
+            "group-specific probability thresholds (T_H,g). This neutralizes historical demographic disparities in intervention allocation.",
         )
-        col_f1, col_f2 = st.columns(2)
+        col_f1, col_f2 = st.columns(2, gap="medium")
         with col_f1:
-            st.markdown(
+            _md(
                 """
-                #### Unmitigated Baseline (Global Threshold)
-
-                A global threshold results in an unacceptable sensitivity gap between
-                financial groups, disproportionately failing to flag at-risk scholarship
-                students.
-
-                * **Non-Scholarship TPR:** 0.907
-                * **Scholarship TPR:** 0.885
-                * **Sensitivity Gap (Delta TPR): 0.022**
+                <div class="fair bad"><div class="fair-h">Unmitigated baseline (global threshold)</div><div class="fair-b">
+                <div class="fair-d">A global threshold results in an unacceptable sensitivity gap between financial groups, disproportionately failing to flag at-risk scholarship students.</div>
+                <div class="fair-r"><span>Non-Scholarship TPR</span><b>0.907</b></div>
+                <div class="fair-r"><span>Scholarship TPR</span><b>0.885</b></div>
+                <div class="fair-g"><span>Sensitivity gap (Delta TPR)</span><b>0.022</b></div>
+                </div></div>
                 """
             )
         with col_f2:
-            st.markdown(
+            _md(
                 """
-                #### Mitigated State (Group Thresholds)
-
-                Applying mathematically optimized thresholds
-                (Scholarship: 0.767, Non-Scholarship: 0.778) equalizes the True Positive
-                Rates.
-
-                * **Non-Scholarship TPR:** 0.849
-                * **Scholarship TPR:** 0.846
-                * **Sensitivity Gap (Delta TPR): 0.003**
+                <div class="fair ok"><div class="fair-h">Mitigated state (group thresholds)</div><div class="fair-b">
+                <div class="fair-d">Applying mathematically optimized thresholds (Scholarship: 0.767, Non-Scholarship: 0.778) equalizes the True Positive Rates.</div>
+                <div class="fair-r"><span>Non-Scholarship TPR</span><b>0.849</b></div>
+                <div class="fair-r"><span>Scholarship TPR</span><b>0.846</b></div>
+                <div class="fair-g"><span>Sensitivity gap (Delta TPR)</span><b>0.003</b></div>
+                </div></div>
                 """
             )
+        st.plotly_chart(plot_fairness_tpr(), use_container_width=True, config={"displayModeBar": False})
 
 
 if __name__ == "__main__":

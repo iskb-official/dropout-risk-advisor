@@ -1,15 +1,13 @@
-# .streamlit/config.toml
-[server]
-maxUploadSize = 200  # MB
-enableXsrfProtection = true
-enableCORS = true
-
-[browser]
-gatherUsageStats = true
-
 [theme]
-primaryColor = "#3B82F6"
-backgroundColor = "#FFFFFF"
-secondaryBackgroundColor = "#F9FAFB"
-textColor = "#262730"
+base = "light"
+primaryColor = "#3B5BDB"
+backgroundColor = "#F4F6FB"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#0E1B3D"
 font = "sans serif"
+
+[client]
+showErrorDetails = "none"
+
+[server]
+headless = true

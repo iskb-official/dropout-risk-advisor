@@ -1894,7 +1894,7 @@ def render_assessment(res, model, medians, feature_cols):
             _group("Scenario board")
             scenario_table = [{
                 "Scenario": s["label"], "Indicator": s["feature"], "Value": s["value"],
-                "Probability": f"{s["probability"]:.1%}", "Δ vs baseline": f"{s["delta"]:+.2%}", "Band": s["band"]
+                "Probability": f"{s['probability']:.1%}", "Δ vs baseline": f"{s['delta']:+.2%}", "Band": s["band"]
             } for s in st.session_state["saved_scenarios"]]
             sdf = pd.DataFrame(scenario_table)
             kwargs = {"hide_index": True}

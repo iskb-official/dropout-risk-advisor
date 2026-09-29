@@ -1,227 +1,271 @@
-# Dropout Risk Advisor
+# Capacity-Aware Decision Support System
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://dropoutra.streamlit.app/)
 
-A trustworthy AI-based decision-support system that helps higher-education institutions identify at-risk students early and recommend targeted interventions with transparent, explainable logic.
+A light, interpretable Streamlit decision-support workspace for student-retention teams. The current application keeps the existing assessment and cohort-scoring workflow while adding a production-oriented presentation layer, safer PDF layout, responsive containment, first-run orientation, and session-only advisor workspace features.
 
-## ✨ Features
+## Scope and freeze policy
 
-| Feature | Description |
-|---------|-------------|
-| **🤖 XGBoost Prediction** | Trained on 4,424 students with 36 features to estimate dropout probability |
-| **🎯 Three-Tier Risk Classification** | Low (<0.20), Medium (0.20-0.50), High (≥0.50) risk bands |
-| **💡 Actionable Interventions** | Band-specific support strategies with capacity constraints |
-| **🔍 SHAP Explainability** | Top 3 factors driving each prediction with plain-language explanations |
-| **⚖️ Fairness Audit** | Error and intervention rates by gender and scholarship status |
-| **🌐 Streamlit Prototype** | Interactive UI for demonstrations and user studies |
+The following application logic is frozen in this release:
 
-## 📊 Model Performance
+- `load_and_train_model`
+- `assign_risk_band`
+- `get_intervention`
+- `get_intervention_detail`
+- `LOW_TH`, `HIGH_TH`, `CAPACITY_LIMIT`
+- batch allocation order and overflow behavior
+- counterfactual calculation
+- existing lever/attribution computation
+- CSV feature schema
+- existing session-state keys and their meanings
 
-| Metric | Value |
-|--------|-------|
-| **ROC-AUC** | 0.93 |
-| **F1 (Dropout Class)** | 0.81 |
-| **High-Risk Band Coverage** | ~80% of actual dropouts |
-| **Low-Risk Band Dropout Rate** | ~5% |
+The UI/PDF layer was changed without changing those computations.
 
-### Top Predictive Features
-1. Curricular units approved (1st & 2nd semesters)
-2. 2nd-semester average grade
-3. Tuition fee status (up to date vs overdue)
-4. Course, admission grade, and age at enrollment
-5. Economic indicators
+## Repository structure
 
-## 🚀 Quick Start
+The frozen structure is:
 
-### Prerequisites
-- Python 3.8+
-- pip package manager
-
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/iskb-official/dropout-risk-advisor.git
-cd dropout-risk-advisor
-
-# Create virtual environment (optional but recommended)
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
+```text
+app.py
+students_dropout_academic_success.csv
+requirements.txt
+.streamlit/config.toml
+README.md
 ```
 
-### Run the Application
+No extra runtime service, database, or API is required.
+
+## Local setup
+
+Recommended interpreter for the pinned stack: Python 3.13.
 
 ```bash
+python -m venv .venv
+```
+
+Windows PowerShell:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
 streamlit run app.py
 ```
 
-The application will open at `http://localhost:8501` in your default browser.
+The app expects `students_dropout_academic_success.csv` in the same directory as `app.py`.
 
-## 📁 Project Structure
+## Streamlit Community Cloud
 
-```
-dropout-risk-advisor/
-├── app.py                          # Main Streamlit application
-├── baseline_dropout.py             # Logistic regression baseline model
-├── dropout_models_step2.py         # Model training and comparison
-├── dropout_risk_bands_step3.py     # Risk band derivation
-├── dropout_interventions_step4.py  # Intervention policy implementation
-├── dropout_shap_step5.py           # SHAP explanations generation
-├── fairness_analysis_step6.py      # Fairness metrics calculation
-├── students_dropout_academic_success.csv  # Dataset (UCI/Kaggle)
-├── xgb_feature_importances.csv     # XGBoost feature importance
-├── shap_global_importance.csv      # Global SHAP importance
-├── risk_bands_test.csv             # Test set predictions with risk bands
-├── dropout_decisions_test.csv      # Intervention decisions
-├── dropout_decisions_with_shap_test.csv  # Decisions with SHAP rationales
-├── requirements.txt                # Python dependencies
-└── README.md                       # This file
-```
+1. Push the release to a feature branch.
+2. Open a pull request into `main`.
+3. In Streamlit Community Cloud, select the repository and `app.py` as the entrypoint.
+4. Use Python 3.13 for the deployment environment.
+5. Let Community Cloud install `requirements.txt`.
+6. Confirm the staging smoke checklist below before promoting the branch.
 
-## 🧠 How It Works
+The current pinned package versions were checked against PyPI on 2026-09-30. Streamlit 1.64.0, XGBoost 3.4.1, SHAP 0.52.0, Plotly 7.1.0, scikit-learn 1.9.1, pandas 3.0.6, NumPy 2.5.3, SciPy 1.18.1, ReportLab 5.0.1, and Kaleido 1.4.0 were selected as the release pins.
 
-### 1. **Risk Prediction Pipeline**
+### Kaleido / PDF note
+
+Plotly static image export uses Kaleido. Current Kaleido requires Chrome/Chromium. The app deliberately treats chart rendering as optional: if Kaleido/Chrome is unavailable, the PDF still generates with text and tables rather than exposing a stack trace.
+
+## White-label customization
+
+All high-level branding is near the top of `app.py`.
+
+Change:
+
 ```python
-# Simplified prediction flow
-student_features → XGBoost Model → Dropout Probability → Risk Band → Intervention
+PRODUCT_NAME = "Capacity-Aware Decision Support System"
+INSTITUTION_NAME = "Your Institution"
+SUPPORT_URL = ""
+MODEL_CARD_URL = ""
+LANGUAGE = "en"
 ```
 
-### 2. **Risk Classification**
-- **Low Risk (p < 0.20)**: General institutional support only
-- **Medium Risk (0.20 ≤ p < 0.50)**: Skills workshops + progress monitoring
-- **High Risk (p ≥ 0.50)**: Intensive mentoring + academic counseling
+Use the `COLORS` dictionary for the design tokens:
 
-### 3. **Explainability**
 ```python
-# SHAP-based explanation example
-Top factors for Student #123:
-1. Low 2nd-semester grades (+25% risk)
-2. Tuition fee overdue (+18% risk)  
-3. High age at enrollment (+12% risk)
+COLORS = {
+    "brand": "#3B5BDB",
+    "navy": "#1B2A5C",
+    "ink": "#0E1B3D",
+    "background": "#F4F6FB",
+    "surface": "#FFFFFF",
+    "low": "#12A594",
+    "medium": "#F5A524",
+    "high": "#DC3F4A",
+}
 ```
 
-### 4. **Fairness Monitoring**
-- **Gender**: Male vs Female intervention rates
-- **Scholarship**: With vs Without scholarship error rates
-- **Statistical parity**: High-risk assignment rates across groups
+The current SVG mark is defined in `LOGO_SVG`. Replace that SVG with an institution-safe single-stroke mark when branding it for production.
 
-## 🌐 Live Demo
+### Language
 
-Try the interactive prototype: **[https://dropoutra.streamlit.app/](https://dropoutra.streamlit.app/)**
+UI text introduced by the product layer is grouped in the `UI` dictionary:
 
-### Demo Features:
-- 🎮 Interactive student profile configuration
-- 📈 Real-time probability calculation
-- 🎯 Risk band visualization
-- 📋 Intervention recommendations
-- 🔍 SHAP force plots and explanations
-- ⚖️ Fairness dashboard
+```python
+UI = {
+    "en": {...}
+}
+```
 
-## 📊 Dataset
+Add another language key beside `en` and change `LANGUAGE` to activate it. Keep the existing model/business strings unchanged unless they are also translated deliberately as a separate controlled release.
 
-**Source**: Predict Students' Dropout and Academic Success (Portuguese higher education)
+## Privacy posture
 
-**Size**: 4,424 students, 36 features
+The UI explicitly communicates that:
 
-**Features Include**:
-- Demographic information (age, gender, nationality)
-- Academic performance (grades, approved units)
-- Economic factors (tuition status, scholarship)
-- Enrollment details (course, attendance mode)
+- data stays in the current browser session;
+- student PII is not intentionally persisted by this application;
+- advisor notes are session-only;
+- the application does not require a database;
+- no third-party tracking script is intentionally loaded.
 
-**Target Variable**: Dropout (1) vs Non-dropout (0: Graduate or Enrolled)
+Operational deployment should still be reviewed against the institution's own FERPA/GDPR, security, retention, and access-control requirements.
 
-## 🔧 Development
+## Accessibility
 
-### Training Pipeline
-To retrain models from scratch:
+The release includes:
+
+- visible keyboard focus rings;
+- non-color textual risk labels;
+- screen-reader helper descriptions for analytical charts;
+- responsive wrapping and minimum-width containment;
+- reduced-motion handling;
+- high-contrast primary text;
+- wrapped PDF table cells and ASCII-safe report glyphs.
+
+## Regression checklist
+
+Run these checks before every merge:
+
+| Area | Check | Expected |
+|---|---|---|
+| Compile | `python -m py_compile app.py` | PASS |
+| Startup | `streamlit run app.py` | No startup exception |
+| Assessment | Enter profile and click assessment | Probability, band, SHAP, what-if and PDF appear |
+| PDF | Download single-student report | PDF opens; no clipped tables |
+| Rerun | Change a widget after a generated report | Assessment remains until explicitly replaced |
+| What-if | Save 1-5 scenarios | Board persists for current assessment |
+| What-if | Save >5 scenarios | Only most recent five are retained |
+| Batch upload | Valid CSV | Scoring completes and queue appears |
+| Batch upload | Empty CSV | Friendly warning, no stack trace |
+| Batch upload | Invalid numeric cells | Coercion/imputation behavior remains unchanged |
+| Batch PDF | Download batch PDF | PDF opens and long action text wraps |
+| Fairness | Open Fairness Audit | Existing displayed values/claims unchanged |
+| Narrow viewport | 320-480 px | No horizontal text overflow |
+| Wide viewport | 1920 px | Content remains centered and bounded |
+| Accessibility | Keyboard tabbing | Focus is visible |
+| Reduced motion | `prefers-reduced-motion` | Animations are disabled |
+| PDF fallback | Kaleido unavailable | Text/tables report still generates |
+
+## Deployment staging checklist
+
+Before production promotion:
+
+1. Confirm the CSV in the branch is the intended data file.
+2. Confirm `requirements.txt` matches the release.
+3. Confirm the institution name, logo, support URL, and model-card URL.
+4. Run the full regression checklist.
+5. Test Chrome, Edge, Safari, and Firefox.
+6. Test a narrow mobile/tablet viewport.
+7. Test a full single-student PDF and a batch PDF.
+8. Review the privacy notice and institution-specific retention/security policy.
+9. Merge through a pull request rather than pushing directly to `main`.
+
+## Rollback
+
+Because this release is intentionally isolated to a feature branch, the simplest rollback is Git-based:
 
 ```bash
-# Run the complete pipeline
-python baseline_dropout.py           # Step 1: Baseline
-python dropout_models_step2.py       # Step 2: Model training
-python dropout_risk_bands_step3.py   # Step 3: Risk bands
-python dropout_interventions_step4.py # Step 4: Interventions
-python dropout_shap_step5.py         # Step 5: SHAP explanations
-python fairness_analysis_step6.py    # Step 6: Fairness analysis
+git switch main
+git pull
+git revert <merge-commit-sha>
+git push origin main
 ```
 
-### Adding New Features
-1. Add feature preprocessing in `dropout_models_step2.py`
-2. Update feature importance analysis
-3. Modify SHAP explanation templates in `dropout_shap_step5.py`
-4. Update the Streamlit UI in `app.py`
+For an unmerged branch, close the pull request and redeploy the last known-good commit.
 
-## ⚖️ Fairness Considerations
+## Custom CI workflow
 
-The system includes built-in fairness monitoring:
+Your freeze list permits only `.streamlit/config.toml` and `README.md` as new files, so this release does **not** add a `.github/workflows/ci.yml` file. The following is the copy-ready workflow to place in `.github/workflows/ci.yml` once the repository freeze is relaxed:
 
-1. **Disparate Impact Analysis**: Intervention rates across demographic groups
-2. **Error Rate Parity**: Equal false positive/negative rates
-3. **Transparency**: All fairness metrics visible in the interface
+```yaml
+name: CI
 
-**Note**: The fairness analysis is for institutional awareness and discussion, not automated decision-making.
+on:
+  push:
+    branches: ["**"]
+  pull_request:
 
-## 🧪 Testing
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-### Unit Tests
-```bash
-# Run basic functionality tests
-python -m pytest tests/ -v
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Compile
+        run: python -m py_compile app.py
+
+      - name: AST smoke checks
+        run: |
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+
+          source = Path("app.py").read_text(encoding="utf-8")
+          tree = ast.parse(source)
+
+          required = {
+              "load_and_train_model",
+              "assign_risk_band",
+              "get_intervention",
+              "get_intervention_detail",
+              "compute_counterfactual",
+              "run_batch",
+              "build_pdf_report",
+              "build_batch_pdf_report",
+          }
+          found = {n.name for n in tree.body if isinstance(n, ast.FunctionDef)}
+          missing = required - found
+          assert not missing, f"Missing functions: {missing}"
+          print("AST_SMOKE_OK")
+          PY
 ```
 
-### Model Validation
-- 80/20 train-test split
-- 5-fold cross-validation
-- Out-of-time validation (when applicable)
+## Changelog
 
-## 🚨 Limitations & Ethical Considerations
+### 2026-09-30 - UI/PDF production hardening
 
-### Limitations
-1. **Data Specificity**: Trained on Portuguese higher education data
-2. **Temporal Factors**: Does not capture real-time academic performance
-3. **Causality**: Identifies correlations, not causal relationships
-4. **Production Readiness**: Prototype stage, not deployment-ready
+- Added centralized white-label and language configuration.
+- Removed remote font import to keep the runtime more privacy-contained.
+- Hardened responsive overflow containment and keyboard focus styling.
+- Added a first-run welcome panel and guided tour.
+- Added an explicit privacy/session notice.
+- Added an advisor closing panel and “assess another student” flow.
+- Added a capacity-use progress bar to cohort scoring.
+- Improved analytical chart margins, legends, labels, and responsive behavior.
+- Added chart accessibility descriptions.
+- Rebuilt single-student and batch PDF layouts around wrapped `Paragraph` cells.
+- Added true-aspect-ratio chart placement.
+- Added branded PDF banner and running header/footer.
+- Added `Page x of y` numbering through a numbered ReportLab canvas.
+- Added ASCII-safe PDF text normalization.
+- Kept Kaleido failure graceful.
+- Added empty-upload and batch-scoring error handling without exposing stack traces.
+- Kept the frozen model/business logic and existing workflow intact.
 
-### Ethical Guidelines
-1. **Human-in-the-loop**: Recommendations require advisor review
-2. **Transparency**: All predictions are explainable
-3. **Bias Monitoring**: Regular fairness audits required
-4. **Student Consent**: Institutional policies must govern data usage
-5. **Purpose Limitation**: Used only for support, not punitive measures
+## Recommended next step
 
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
-
-### Areas for Improvement
-- Additional international datasets
-- Real-time performance tracking
-- Alternative banding strategies
-- Enhanced fairness constraints
-- Multi-institutional validation
-
-## 📚 Citation
-
-If you use this work in research, please cite:
-
-(Unavailable)
-
-## 📞 Contact
-
-REMOVED! Project Under Peer Review.
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-The dataset is from UCI/Kaggle and subject to their respective terms.
-
----
-
-**⚠️ Disclaimer**: This system is a research prototype. Institutions should conduct local validation, ethical review, and implement appropriate governance before real-world deployment.
+The next controlled release should be an evidence-backed usability test with advisors/registrars before any deeper workflow or backend changes. Phase 2 items such as multi-tenancy, SSO, roles, audit logs, or a separate model service should remain out of this release.
 
 
